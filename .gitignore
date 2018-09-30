@@ -105,3 +105,6 @@ venv.bak/
 
 # virtual environment
 env
+
+# 
+.DS_Store
