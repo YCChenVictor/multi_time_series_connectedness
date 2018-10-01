@@ -58,28 +58,33 @@ def date_format(date):
 
 class volatility:
 
-    def __init__(self, names, stocks, path, start_dt, end_dt):
+    def __init__(self, names, csv_files, path, start_dt, end_dt):
 
         # The variables we need to launch this class
+        # the names of the volatility
         self.names = names
-        self.stocks = stocks
+        # the path filled timeseries data going to calculate volatility
         self.path = path
+        # the names of the csv file in the given path
+        self.csv_files = csv_files
+        # the start date of the volatility data
         self.start_dt = date_format(start_dt)
+        # the end date of the volatility data
         self.end_dt = date_format(end_dt)
         # Variable generated in price_data_to_volatility
-        self.dataframe = None
-        # Variable generated in periods_of_volatility
         self.dict_data = None
+        # Variable generated in periods_of_volatility
+        self.dataframe = None
 
     # read the price data, set up dictionary and then calculate the volatility
     def price_data_to_volatility(self):
 
         names = self.names
-        stocks = self.stocks
+        csv_files = self.csv_files
 
         dict_data = {}  # the dictionary
         for i in range(len(names)):
-            dict_data[names[i]] = pd.read_csv(self.path + "/" + stocks[i])
+            dict_data[names[i]] = pd.read_csv(self.path + "/" + csv_files[i])
 
         # deal with the Non-data problem
         for i in range(len(dict_data)):
