@@ -83,7 +83,7 @@ class Create_Network:
                      forceatlas2_networkx_layout(self.Graph,
                                                  pos=None,
                                                  iterations=2000))
-        self.Plot = nx.draw_networkx(self.G, positions,
+        self.Plot = nx.draw_networkx(self.Graph, positions,
                                      cmap=plt.get_cmap('jet'),
                                      node_size=50, with_labels=True)
 
