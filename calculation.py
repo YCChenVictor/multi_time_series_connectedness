@@ -2,6 +2,10 @@
 I think there is no need for specifying csv file name and path. Needs more
 modification.
 
+I also need to check whether the names match csv_files
+
+I also need to do more research about forceatlas
+
 The next step is to claculate rolling connectedness
 """
 
@@ -9,6 +13,8 @@ The next step is to claculate rolling connectedness
 import functions.f_volatility as f_vol
 import functions.f_coef as f_coef
 import functions.f_connectedness as f_conn
+import functions.f_network as f_net
+import pandas as pd
 
 
 # variables for volatility
@@ -26,6 +32,10 @@ volatility = f_vol.volatility(names, csv_files, path, start_dt, end_dt)
 volatility.price_data_to_volatility()
 volatility.periods_of_volatility()
 volatility_dataframe = volatility.dataframe
+
+# save name of the dataframe
+names = list(volatility_dataframe.columns.values)
+names.remove('Date')
 
 # calculate estimated coefficients
 coef = f_coef.Coef(volatility_dataframe, 20)
@@ -45,3 +55,13 @@ ols_sigma = coef.OLS_sigma
 conn = f_conn.Connectedness(ols_coef, ols_sigma)
 conn.f_full_connectedness()
 table = conn.full_connectedness
+
+# turn table into dataframe so that the f_net can use it
+table = pd.DataFrame(table)
+
+# construct network plot
+network = f_net.Create_Network(table)
+network.change_names(names)
+network.create_network()
+network.plot()
+network.show_draw()
