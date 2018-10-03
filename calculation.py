@@ -56,8 +56,6 @@ conn = f_conn.Connectedness(ols_coef, ols_sigma)
 conn.f_full_connectedness()
 table = conn.full_connectedness
 
-# turn table into dataframe so that the f_net can use it
-table = pd.DataFrame(table)
 
 # construct network plot
 network = f_net.Create_Network(table)

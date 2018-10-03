@@ -1,5 +1,6 @@
 # import required modules
 import numpy as np
+import pandas as pd
 
 
 # connectedness
@@ -136,4 +137,4 @@ class Connectedness:
         down = np.concatenate((np.matrix(to_other), np.matrix(spill_over)), axis=1)
         connetedeness_table = np.concatenate((up, down), axis=0)
 
-        self.full_connectedness = connetedeness_table
+        self.full_connectedness = pd.DataFrame(connetedeness_table)
