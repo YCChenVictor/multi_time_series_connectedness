@@ -108,3 +108,6 @@ env
 
 # 
 .DS_Store
+
+# pickle files
+.pickle
