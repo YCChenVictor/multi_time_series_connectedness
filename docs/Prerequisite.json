@@ -1,6 +1,1 @@
-{
-  "target_folder": {},
-  "names": {},
-  "start_dt": {},
-  "end_dt": {}
-}
+{"target_folder": "country_stock_csv", "start_dt": "1998-09-01", "end_dt": "2018-01-01"}
