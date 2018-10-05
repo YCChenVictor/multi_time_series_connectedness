@@ -1,9 +1,4 @@
 """
-I think there is no need for specifying csv file name and path. Needs more
-modification. => I am working to make a json file to store these information
-
-I also need to check whether the names match csv_files
-
 I also need to do more research about forceatlas
 
 The next step is to claculate rolling connectedness
@@ -16,56 +11,27 @@ import functions.f_coef as f_coef
 import functions.f_connectedness as f_conn
 import functions.f_network as f_net
 import os
-import glob
 
 # load Prerequisite
 file_dir = os.path.dirname(os.path.abspath(__file__))
 path = file_dir + '/docs/'
-os.chdir(path)
-with open('Prerequisite.json') as f:
-    data = json.load(f)
+with open(path + 'Prerequisite.json') as f:
+    prerequisite = json.load(f)
 
-# update the Prerequisite
-if data["target_folder"] == {}:
-    print("please speficify the folder filled with csv files to calculate connectedness")
-    data["target_folder"] = input("please input target folder:")
+# varibales from prerequisite
+target_folder = prerequisite["target_folder"]
+start_dt = prerequisite["start_dt"]
+end_dt = prerequisite["end_dt"]
 
-
-"""
-# input variables
-input
-
-# input the target folder name in docs
-target_folder = 'country_stock_csv'
-if target_folder is None:
-    target_folder = input("input target folder:")
-else:
-    pass
-
-
-# obtain csv files from particular folder
+# get all the names of the csv files
 file_dir = os.path.dirname(os.path.abspath(__file__))
 path = file_dir + '/docs/' + target_folder
-os.chdir(path)
-csv_files = glob.glob('**.csv')
+for root, dirs, files in os.walk(path):
+    csv_files = files
 
+# specify all the names (this should be solve with json)
+names = ["HK", "Japan", "Singapore", "China", "US", "UK", "Taiwan"]
 
-# setup the names of the variables
-names = input("input the names of the volatility variables:")
-names = ["US", "UK", "Singapore", "HK", "Taiwan", "Japan", "china"]
-if names is None:
-    names = csv_files
-else:
-    pass
-
-# variables for volatility
-start_dt = input("input the start date for volatility dataframe:")
-end_dt = input("input the end data for volatility dataframe:")
-start_dt = "1998-09-01"
-end_dt = "2018-01-01"
-"""
-
-"""
 # calculate volatility dataframe
 volatility = f_vol.volatility(names, csv_files, path, start_dt, end_dt)
 volatility.price_data_to_volatility()
@@ -95,11 +61,9 @@ conn = f_conn.Connectedness(ols_coef, ols_sigma)
 conn.f_full_connectedness()
 table = conn.full_connectedness
 
-
 # construct network plot
 network = f_net.Create_Network(table)
 network.change_names(names)
 network.create_network()
 network.plot()
 network.show_draw()
-"""
