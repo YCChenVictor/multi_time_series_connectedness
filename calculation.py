@@ -1,6 +1,8 @@
 """
 I also need to do more research about forceatlas
 
+maybe I should also write a class for data inputting
+
 The next step is to claculate rolling connectedness
 """
 
@@ -31,6 +33,15 @@ for root, dirs, files in os.walk(path):
 
 # specify all the names (this should be solve with json)
 names = ["HK", "Japan", "Singapore", "China", "US", "UK", "Taiwan"]
+if names is None:
+    answer = input("whether to specify the names? y/N:")
+    if answer == "y":
+        print("please enter the list of the names matching the following csv" +
+              "files")
+        print(csv_files)
+        names = input("input names:")
+    else:
+        names = csv_files
 
 # calculate volatility dataframe
 volatility = f_vol.volatility(names, csv_files, path, start_dt, end_dt)
