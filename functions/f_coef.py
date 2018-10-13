@@ -79,8 +79,8 @@ def aic(mle_sigma_estimates, coef, t):
 
 class Coef:
 
-    @classmethod
-    def lag_chooser(cls, data, max_lag):
+    @staticmethod
+    def lag_chooser(data, max_lag):
         list_aic = []
         for i in range(1, max_lag + 1):
             sx = var_x(data, i)
@@ -95,10 +95,10 @@ class Coef:
         index, value = min(enumerate(list_aic), key=operator.itemgetter(1))
         return index + 1, value
 
-    def __init__(cls, self, data, max_lag):
+    def __init__(self, data, max_lag):
         # The variables we need to launch this class
         # the lag chooses from lag_chooser
-        self.Lag = cls.lag_chooser(data, max_lag)
+        self.Lag = self.lag_chooser(data, max_lag)
         # the x and y to calculate coef
         self.x = var_x(data, self.Lag[0])
         self.y = var_y(data, self.Lag[0])
