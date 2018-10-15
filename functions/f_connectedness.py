@@ -1,3 +1,13 @@
+"""
+ex:     1    2    3
+    1   a    b    c
+    2
+    3
+
+b means how volatility of 1 influence volatility 2
+
+"""
+
 # import required modules
 import numpy as np
 import pandas as pd
@@ -138,3 +148,10 @@ class Connectedness:
         connetedeness_table = np.concatenate((up, down), axis=0)
 
         self.full_connectedness = pd.DataFrame(connetedeness_table)
+
+    def rename_table(self, names):
+        full_connectedness = self.full_connectedness
+        full_connectedness.columns = names
+        full_connectedness.rename(index=dict(
+                                  zip(full_connectedness.index, names)),
+                                  inplace=True)
