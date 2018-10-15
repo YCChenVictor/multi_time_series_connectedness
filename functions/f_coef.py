@@ -77,28 +77,28 @@ def aic(mle_sigma_estimates, coef, t):
     return aic_result
 
 
-class Coef:
+def lag_chooser(data, max_lag):
+    list_aic = []
+    for i in range(1, max_lag + 1):
+        sx = var_x(data, i)
+        sy = var_y(data, i)
+        t = sx.shape[1]
+        reg = linear_model.LinearRegression(fit_intercept=False)
+        reg.fit(sx.transpose(), sy.transpose())
+        coef = reg.coef_
+        mle_sigma_result = mle_sigma(sy, sx, coef)
+        aic_result = aic(mle_sigma_result, coef, t)
+        list_aic.append(aic_result)
+    index, value = min(enumerate(list_aic), key=operator.itemgetter(1))
+    return index + 1, value
 
-    @staticmethod
-    def lag_chooser(data, max_lag):
-        list_aic = []
-        for i in range(1, max_lag + 1):
-            sx = var_x(data, i)
-            sy = var_y(data, i)
-            t = sx.shape[1]
-            reg = linear_model.LinearRegression(fit_intercept=False)
-            reg.fit(sx.transpose(), sy.transpose())
-            coef = reg.coef_
-            mle_sigma_result = mle_sigma(sy, sx, coef)
-            aic_result = aic(mle_sigma_result, coef, t)
-            list_aic.append(aic_result)
-        index, value = min(enumerate(list_aic), key=operator.itemgetter(1))
-        return index + 1, value
+
+class Coef:
 
     def __init__(self, data, max_lag):
         # The variables we need to launch this class
         # the lag chooses from lag_chooser
-        self.Lag = self.lag_chooser(data, max_lag)
+        self.Lag = lag_chooser(data, max_lag)
         # the x and y to calculate coef
         self.x = var_x(data, self.Lag[0])
         self.y = var_y(data, self.Lag[0])
@@ -132,8 +132,8 @@ class Coef:
         data = self.Data
         lag = self.Lag
 
-        sx = var_x(data, lag[0])
-        sy = var_y(data, lag[0])
+        sx = self.var_x(data, lag[0])
+        sy = self.var_y(data, lag[0])
 
         lasso_model = (linear_model.
                        MultiTaskLassoCV(cv=cv_value, fit_intercept=False,
