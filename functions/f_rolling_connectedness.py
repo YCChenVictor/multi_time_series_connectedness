@@ -23,6 +23,7 @@ class Rolling_Connectedness:
         # save the calculated connectedness
         self.data_list = None
         self.connectedness_list = None
+        self.accuracy_list = None
 
     def divide_dataframe(self):
 
@@ -35,10 +36,16 @@ class Rolling_Connectedness:
 
         # iteratively divide dataframe
         for i in range(len(dataframe)):
+
+            # get divided data
             data = dataframe.iloc[i: periods+i]
-            data = data.reset_index(drop=True)
             if len(data) < periods:
                 break
+
+            # get the start and end date
+            data = data.reset_index(drop=True)
+
+            # add to data_list
             data_list.append(data)
 
         self.data_list = data_list
@@ -47,18 +54,26 @@ class Rolling_Connectedness:
 
         data_list = self.data_list
         max_lag = self.max_lag
+        periods = self.data_periods
 
         # create the list of the rolling dataframe
         connectedness_list = []
-        accuracy_list = []
 
         # index
         index = 0
 
         # start to calculate rolling
+        save_data = []
+
         for data in data_list:
 
-            print("calculating rolling, period: %s" % index)
+            # get start and end date
+            start_date = data["Date"][0]
+            end_date = data["Date"][periods-1]
+            period = start_date + " ~ " + end_date
+
+            print("calculating rolling, period: %s" % period)
+
             # coef and sigma_hat ####
             coef = f_coef.Coef(data, max_lag)
             coef.f_ols_coef()
@@ -67,13 +82,15 @@ class Rolling_Connectedness:
 
             # accuracy
             accuracy = coef.accuracy
-            accuracy_list.append(accuracy)
 
             # connectedness
             conn = f_conn.Connectedness(ols_coef, ols_sigma)
             conn.f_full_connectedness()
-            connectedness_list.append(conn.full_connectedness)
             index += 1
+
+            # save
+            save_data.append([period, accuracy, conn.full_connectedness])
+            connectedness_list.append(save_data)
 
         # save rolling connectedness in class
         self.connectedness_list = connectedness_list
