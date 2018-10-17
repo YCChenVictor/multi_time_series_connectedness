@@ -63,7 +63,7 @@ class volatility:
         # The variables we need to launch this class
         # the names of the volatility
         self.names = names
-        # the path filled timeseries data going to calculate volatility
+        # the path filled with timeseries data going to calculate volatility
         self.path = path
         # the names of the csv file in the given path
         self.csv_files = csv_files
@@ -91,7 +91,7 @@ class volatility:
             dict_data[names[i]] = dict_data[names[i]].interpolate()
 
         for i in range(len(dict_data)):
-            vol_name = names[i] + "_" + "volatility"
+            vol_name = names[i] + '_vol'
             dict_data[names[i]][vol_name] = yang_zhang_volatility(dict_data[names[i]])
 
         self.dict_data = dict_data
