@@ -1,9 +1,7 @@
 """
 I also need to do more research about forceatlas
 
-maybe I should also write a class for data inputting
-
-The next step is to claculate rolling connectedness
+Noe doing table restrcturing
 """
 
 # import modules
@@ -52,6 +50,7 @@ volatility_dataframe = volatility.dataframe
 # save name of the dataframe
 names = list(volatility_dataframe.columns.values)
 names.remove('Date')
+names.append("all")
 
 # calculate estimated coefficients
 coef = f_coef.Coef(volatility_dataframe, 20)
@@ -67,14 +66,19 @@ accuracy = coef.accuracy
 # sy = coef.y
 ols_sigma = coef.OLS_sigma
 
+
 # calculate connectedness
 conn = f_conn.Connectedness(ols_coef, ols_sigma)
 conn.f_full_connectedness()
+conn.rename_table(names)
 table = conn.full_connectedness
+print(conn.table_restructure())
 
+"""
 # construct network plot
 network = f_net.Create_Network(table)
 network.change_names(names)
 network.create_network()
 network.plot()
 network.show_draw()
+"""
