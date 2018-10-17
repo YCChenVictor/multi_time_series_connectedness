@@ -1,10 +1,12 @@
 """
-ex:     1    2    3
-    1   a    b    c
-    2
-    3
+     1    2    3
+1    a    b    c
 
-b means how volatility of 1 influence volatility 2
+2
+
+3
+
+b means volatility of 2 cause volatility of 1
 
 """
 
@@ -106,6 +108,7 @@ def generalized_variance_decomp(m, coef, sigma_hat, h=5):
 
 
 class Connectedness:
+
     def __init__(self, coef, sigma_hat):
 
         # the varilables required to lauch this class
@@ -115,39 +118,57 @@ class Connectedness:
         # return the Full_Connectedness
         self.full_connectedness = None
 
+        # restructure into flat shape
+        self.restructure_connectedness = None
+
     def f_full_connectedness(self, h=5):
 
+        # input required variable
         coef = self.Coef
         sigma_hat = self.Sigma_hat
 
+        # the number of time series data
         n = coef.shape[0]
-        connetedeness = []
+
+        # start to calculate connectedness
+        connectedness = []
+
+        # obtain the generalized variance decomposition after 5 periods
+        # each variable fluctuates one time
         for i in range(1, (n + 1)):
-            target = generalized_variance_decomp(i, coef, sigma_hat, h)[h - 1]
-            connetedeness.append(target)
-        connetedeness = np.array(connetedeness).T
-        for i in range(0, n):  # first time modification to 1
-            connetedeness[i] = connetedeness[i] / np.sum(connetedeness[i])
-        connetedeness = connetedeness.T
-        for i in range(0, n):  # second time modification to 1
-            connetedeness[i] = connetedeness[i] / np.sum(connetedeness[i])
+            GVD = generalized_variance_decomp(i, coef, sigma_hat, h)[h - 1]
+            connectedness.append(GVD)
+
+        # transpose
+        connectedness = np.array(connectedness).T
+
+        # rescale each row to summation of 1
+        for i in range(len(connectedness)):
+            connectedness[i] = connectedness[i]/np.sum(connectedness[i])
+
+        # calculate from_other
         from_other = []
-        for i in range(0, len(connetedeness)):
-            connectedness_value = connetedeness[i]
+        for i in range(0, len(connectedness)):
+            connectedness_value = connectedness[i]
             from_other_value = 1 - connectedness_value[i]
             from_other.append(from_other_value)
+
+        # calculated to_other
         to_other = []
-        for i in range(0, len(connetedeness)):
-            connectedness = np.array(connetedeness).T[i]
-            to_other_value = np.sum(connectedness) - connectedness[i]
+        connectedness_tran = np.array(connectedness).T
+        for i in range(0, len(connectedness)):
+            connectedness_value = connectedness_tran[i]
+            to_other_value = np.sum(connectedness_value) - connectedness_value[i]
             to_other.append(to_other_value)
+
+        # spill over index (total connectedness)
         spill_over = np.sum(from_other) / n
         np.matrix(from_other).transpose()
-        up = np.concatenate((np.matrix(connetedeness), np.matrix(from_other).transpose()), axis=1)
+        up = np.concatenate((np.matrix(connectedness), np.matrix(from_other).transpose()), axis=1)
         down = np.concatenate((np.matrix(to_other), np.matrix(spill_over)), axis=1)
-        connetedeness_table = np.concatenate((up, down), axis=0)
+        connectedness_table = np.concatenate((up, down), axis=0)
 
-        self.full_connectedness = pd.DataFrame(connetedeness_table)
+        self.full_connectedness = pd.DataFrame(connectedness_table)
 
     def rename_table(self, names):
         full_connectedness = self.full_connectedness
@@ -155,3 +176,27 @@ class Connectedness:
         full_connectedness.rename(index=dict(
                                   zip(full_connectedness.index, names)),
                                   inplace=True)
+
+    def table_restructure(self):
+
+        connectedness = self.full_connectedness
+
+        # get the names specify the direction of a connectedness
+        col_names = list(connectedness.columns.values)
+        row_names = list(connectedness.index)
+
+        name_list = []
+        for col_name in col_names:
+            for row_name in row_names:
+                name = col_name + "->" + row_name
+                name_list.append(name)
+
+        # get the connectedness value
+        # print(type(connectedness))
+
+
+
+        return name_list
+
+        # self.restructure_connectedness = ...
+
