@@ -121,7 +121,7 @@ class Connectedness:
         # restructure into flat shape
         self.restructure_connectedness = None
 
-    def f_full_connectedness(self, h=5):
+    def f_full_connectedness(self, h=1):
 
         # input required variable
         coef = self.Coef
@@ -188,15 +188,15 @@ class Connectedness:
         name_list = []
         for col_name in col_names:
             for row_name in row_names:
-                name = col_name + "->" + row_name
+                name = col_name + "_->_" + row_name
                 name_list.append(name)
 
-        # get the connectedness value
-        # print(type(connectedness))
+        # get the restructure connectedness value ##
+        # array
+        flat_connectedness = np.array(connectedness).T.flatten()
+        # dataframe
+        flat_connectedness = pd.DataFrame(flat_connectedness).transpose()
+        # name
+        flat_connectedness.columns = name_list
 
-
-
-        return name_list
-
-        # self.restructure_connectedness = ...
-
+        self.restructure_connectedness = flat_connectedness
