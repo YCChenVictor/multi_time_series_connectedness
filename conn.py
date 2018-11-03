@@ -5,41 +5,17 @@ Noe doing table restrcturing
 """
 
 # import modules
-import json
 import functions.f_volatility as f_vol
 import functions.f_coef as f_coef
 import functions.f_connectedness as f_conn
-import functions.f_network as f_net
-import os
+import functions.f_load_data as f_load
 
-# load Prerequisite
-file_dir = os.path.dirname(os.path.abspath(__file__))
-path = file_dir + '/docs/'
-with open(path + 'Prerequisite.json') as f:
-    prerequisite = json.load(f)
-
-# varibales from prerequisite
-target_folder = prerequisite["target_folder"]
-start_dt = prerequisite["start_dt"]
-end_dt = prerequisite["end_dt"]
-
-# get all the names of the csv files
-file_dir = os.path.dirname(os.path.abspath(__file__))
-path = file_dir + '/docs/' + target_folder
-for root, dirs, files in os.walk(path):
-    csv_files = files
-
-# specify all the names (this should be solve with json)
-names = ["HK", "Japan", "Singapore", "China", "US", "UK", "Taiwan"]
-if names is None:
-    answer = input("whether to specify the names? y/N:")
-    if answer == "y":
-        print("please enter the list of the names matching the following csv" +
-              "files")
-        print(csv_files)
-        names = input("input names:")
-    else:
-        names = csv_files
+# obtain the names, csv_files, path, start_dt, end_dt
+names = f_load.names
+csv_files = f_load.csv_files
+path = f_load.path
+start_dt = f_load.start_dt
+end_dt = f_load.end_dt
 
 # calculate volatility dataframe
 volatility = f_vol.volatility(names, csv_files, path, start_dt, end_dt)
@@ -72,13 +48,4 @@ conn = f_conn.Connectedness(ols_coef, ols_sigma)
 conn.f_full_connectedness()
 conn.rename_table(names)
 table = conn.full_connectedness
-print(conn.table_restructure())
-
-"""
-# construct network plot
-network = f_net.Create_Network(table)
-network.change_names(names)
-network.create_network()
-network.plot()
-network.show_draw()
-"""
+conn.table_restructure()
