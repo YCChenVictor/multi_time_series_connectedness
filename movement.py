@@ -18,9 +18,10 @@ move.get_movements()
 # get the movement dataframe
 move.periods_of_volatility()
 movement = move.dataframe
+print(movement)
 
 # save the volatility_dataframe into pickle
 file_path = os.path.dirname(os.path.realpath(__file__))
 save_path = file_path + '/docs/' + 'movement.pickle'
 with open(save_path, 'wb') as f:
-    pickle.dump(move, f)
+    pickle.dump(movement, f)
