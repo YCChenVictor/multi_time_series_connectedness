@@ -6,23 +6,22 @@ I should reveal the period of connectedness I am calculating, not just number.
 # import the required module
 import functions.f_connectedness as f_conn
 import functions.f_coef as f_coef
-import pickle
-import os
-import functions.about_path as f_about_path
+import pandas as pd
+import datetime
 
 
 class Rolling_Connectedness:
 
-    def __init__(self, data, max_lag, data_periods):
+    def __init__(self, data, max_lag, data_periods, names):
         # to variable to run this module
         self.data = data
-        self.name = list(data)
+        self.names = names
         self.max_lag = max_lag
         self.data_periods = data_periods
 
         # save the calculated connectedness
         self.data_list = None
-        self.connectedness_list = None
+        self.rolling_connectedness = None
         self.accuracy_list = None
 
     def divide_dataframe(self):
@@ -55,15 +54,17 @@ class Rolling_Connectedness:
         data_list = self.data_list
         max_lag = self.max_lag
         periods = self.data_periods
+        names = self.names
 
         # create the list of the rolling dataframe
         connectedness_list = []
+        date_list = []
 
         # index
         index = 0
 
         # start to calculate rolling
-        save_data = []
+        # save_data = []
 
         for data in data_list:
 
@@ -72,7 +73,8 @@ class Rolling_Connectedness:
             end_date = data["Date"][periods-1]
             period = start_date + " ~ " + end_date
 
-            print("calculating rolling, period: %s" % period)
+            print("calculate connectedness for next period of %s, period: %s"
+                  % (end_date, period))
 
             # coef and sigma_hat ####
             coef = f_coef.Coef(data, max_lag)
@@ -86,33 +88,31 @@ class Rolling_Connectedness:
             # connectedness
             conn = f_conn.Connectedness(ols_coef, ols_sigma)
             conn.f_full_connectedness()
+            conn.rename_table(names)
+            conn.table_restructure()
             index += 1
 
-            # save
-            save_data.append([period, accuracy, conn.full_connectedness])
-            connectedness_list.append(save_data)
+            # return accuracy and restrcture_connectedness with period as row
+            # name ##### add accuracy into dataframe
+            rest = conn.restructure_connectedness
+            rest["accuracy"] = accuracy
+
+            # rename row name with the predict connectedness date
+            date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
+            date = date + datetime.timedelta(days=1)
+            date_list.append(date)
+
+            # append into connectedness_list
+            connectedness_list.append(rest)
+
+            # combine them
+            result = pd.concat(connectedness_list, ignore_index=True)
+
+        # add date to the calculated dataframe
+        result["Date"] = date_list
 
         # save rolling connectedness in class
-        self.connectedness_list = connectedness_list
-
-        # save rolling connectedness in pickle
-        current_path = os.path.dirname(os.path.realpath(__file__))
-        file_path = f_about_path.parent_path(current_path, 1)
-        save_path = file_path + '/docs/' + 'roll_conn.pickle'
-        with open(save_path, 'wb') as f:
-            pickle.dump(connectedness_list, f)
-
-    def rolling_to_panel(self):
-
-        # read connectedness in pickle if there is nothing in roll_conn
-        current_path = os.path.dirname(os.path.realpath(__file__))
-        file_path = f_about_path.parent_path(current_path, 2)
-        save_path = file_path + '/docs/' + 'roll_conn.pickle'
-        with open(save_path, 'rb') as f:
-            result = pickle.load(f)
-
-        # restructure it
-        return result
+        self.rolling_connectedness = result
 
     def plot_rolling():
         pass
