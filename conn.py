@@ -48,4 +48,5 @@ conn = f_conn.Connectedness(ols_coef, ols_sigma)
 conn.f_full_connectedness()
 conn.rename_table(names)
 table = conn.full_connectedness
+print(table) # This is the result of connectedness!
 conn.table_restructure()
