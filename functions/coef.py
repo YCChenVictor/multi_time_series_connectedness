@@ -13,7 +13,7 @@ def var_y(data, lag=1):
     :return: for example, if lag = 4, then the first part of 4 periods would be
     # deleted because we cannot estimate them
     """
-    y = data.drop("Date", axis=1).drop(range(lag)).values.transpose()
+    y = data.drop("time", axis=1).drop(data.index[:lag]).values.transpose()
     return y
 
 
@@ -39,7 +39,7 @@ def var_x(data, lag=1):
     :param lag: the lag od AR
     :return: a matrix with stacked shifted past period data
     """
-    y = data.drop("Date", axis=1).values.transpose()
+    y = data.drop("time", axis=1).values.transpose()
     x = y
     if lag > 1:
         for i in range(1, lag):
@@ -98,10 +98,10 @@ class Coef:
     def __init__(self, data, max_lag):
         # The variables we need to launch this class
         # the lag chooses from lag_chooser
-        self.Lag = lag_chooser(data, max_lag)
+        self.lag = lag_chooser(data, max_lag)
         # the x and y to calculate coef
-        self.x = var_x(data, self.Lag[0])
-        self.y = var_y(data, self.Lag[0])
+        self.x = var_x(data, self.lag[0])
+        self.y = var_y(data, self.lag[0])
 
         # The place where to save calculated coef
         self.OLS_coef = None
