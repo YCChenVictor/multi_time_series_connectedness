@@ -111,3 +111,6 @@ env
 
 # pickle files
 .pickle
+
+#
+docs/
