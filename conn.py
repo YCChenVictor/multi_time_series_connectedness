@@ -1,9 +1,12 @@
 import argparse
 import functions.f_volatility as f_vol
 import functions.coef as f_coef
-import functions.f_connectedness as f_conn
+import functions.connectedness as f_conn
+from functions.load_data import get_file_names
 
 def calculate_connectedness(start_at, end_at, files_path):
+    files = get_file_names(files_path)
+
     # calculate volatility dataframe
     volatility = f_vol.volatility(files_path, start_at, end_at)
     volatility.price_data_to_volatility()
@@ -22,11 +25,11 @@ def calculate_connectedness(start_at, end_at, files_path):
 
     # calculate connectedness
     conn = f_conn.Connectedness(ols_coef, ols_sigma)
-    conn.f_full_connectedness()
-    conn.rename_table(names)
+    conn.calculate_full_connectedness()
+    conn.rename_table(files + ["all"])
     table = conn.full_connectedness
-    print(table) # This is the result of connectedness!
-    conn.table_restructure()
+    return table
+    # conn.table_restructure()
 
 def main(start_at, end_at, files_path):
     connectedness_results = calculate_connectedness(start_at, end_at, files_path)

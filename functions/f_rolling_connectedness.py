@@ -4,8 +4,8 @@ I should reveal the period of connectedness I am calculating, not just number.
 
 """
 # import the required module
-import functions.f_connectedness as f_conn
-import functions.f_coef as f_coef
+import functions.connectedness as f_conn
+import functions.coef as coef
 import pandas as pd
 import datetime
 
@@ -77,7 +77,7 @@ class Rolling_Connectedness:
                   % (end_date, period))
 
             # coef and sigma_hat ####
-            coef = f_coef.Coef(data, max_lag)
+            coef = coef.Coef(data, max_lag)
             coef.f_ols_coef()
             ols_coef = coef.OLS_coef
             ols_sigma = coef.OLS_sigma
@@ -87,7 +87,7 @@ class Rolling_Connectedness:
 
             # connectedness
             conn = f_conn.Connectedness(ols_coef, ols_sigma)
-            conn.f_full_connectedness()
+            conn.calculate_full_connectedness()
             conn.rename_table(names)
             conn.table_restructure()
             index += 1

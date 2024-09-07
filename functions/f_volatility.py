@@ -3,10 +3,11 @@ import numpy as np
 import datetime
 import pandas as pd
 import os
+from functions.load_data import get_file_names
 # =================================
 
 
-def yang_zhang_volatility(data, n=2):
+def yang_zhang_volatility(data, name, n=2):
     """
     :param data: a list with Open, High, Low, Close price
     :param n: the periods to obtain the average volatilitys
@@ -35,7 +36,9 @@ def yang_zhang_volatility(data, n=2):
     # yang-zhang
     result = (vo + k * vt + (1 - k) * rs).apply(np.sqrt)
 
-    return pd.concat([data['time'], result], axis=1)
+    result_df = result.to_frame(name=name)
+
+    return pd.concat([data['time'], result_df], axis=1)
 
 def date_format(date):
     list_date = date.split("-")
@@ -56,8 +59,7 @@ class volatility:
 
     # read the price data, set up dictionary and then calculate the volatility
     def price_data_to_volatility(self):
-        all_entries = os.listdir(self.path)
-        files = [entry for entry in all_entries if os.path.isfile(os.path.join(self.path, entry))]
+        files = get_file_names(self.path)
 
         volatilities = None
         for i in range(len(files)):
@@ -65,10 +67,11 @@ class volatility:
             timeseries_data = timeseries_data.loc[
                     (timeseries_data["time"] >= self.start_at) & (timeseries_data["time"] <= self.end_at)]
             timeseries_data = timeseries_data.interpolate()
-            volatility = yang_zhang_volatility(timeseries_data)
+            volatility = yang_zhang_volatility(timeseries_data, files[i])
             if volatilities is None:
                 volatilities = volatility
             else:
                 volatilities = volatilities.merge(volatility, on='time', how='outer')
 
+        print(volatilities)
         self.volatilities = volatilities
