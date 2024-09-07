@@ -2,6 +2,7 @@
 import numpy as np
 import datetime
 import pandas as pd
+import os
 # =================================
 
 
@@ -58,19 +59,14 @@ def date_format(date):
 
 class volatility:
 
-    def __init__(self, names, csv_files, path, start_dt, end_dt):
-
+    def __init__(self, path, start_dt, end_dt):
         # The variables we need to launch this class
-        # the names of the volatility
-        self.names = names
         # the path filled with timeseries data going to calculate volatility
         self.path = path
-        # the names of the csv file in the given path
-        self.csv_files = csv_files
         # the start date of the volatility data
-        self.start_dt = date_format(start_dt)
+        self.start_dt = start_dt
         # the end date of the volatility data
-        self.end_dt = date_format(end_dt)
+        self.end_dt = end_dt
         # Variable generated in price_data_to_volatility
         self.dict_data = None
         # Variable generated in periods_of_volatility
@@ -78,21 +74,22 @@ class volatility:
 
     # read the price data, set up dictionary and then calculate the volatility
     def price_data_to_volatility(self):
-
-        names = self.names
-        csv_files = self.csv_files
+        # Get list of all files and directories
+        all_entries = os.listdir(self.path)
+        # Filter out only the files
+        files = [entry for entry in all_entries if os.path.isfile(os.path.join(self.path, entry))]
 
         dict_data = {}  # the dictionary
-        for i in range(len(names)):
-            dict_data[names[i]] = pd.read_csv(self.path + "/" + csv_files[i])
+        for i in range(len(files)):
+            dict_data[files[i]] = pd.read_csv(self.path + "/" + files[i])
 
         # deal with the Non-data problem
         for i in range(len(dict_data)):
-            dict_data[names[i]] = dict_data[names[i]].interpolate()
+            dict_data[files[i]] = dict_data[files[i]].interpolate()
 
         for i in range(len(dict_data)):
-            vol_name = names[i] + '_vol'
-            dict_data[names[i]][vol_name] = yang_zhang_volatility(dict_data[names[i]])
+            vol_name = files[i] + '_vol'
+            dict_data[files[i]][vol_name] = yang_zhang_volatility(dict_data[files[i]])
 
         self.dict_data = dict_data
 
