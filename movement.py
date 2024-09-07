@@ -1,6 +1,6 @@
 # import modules
 import functions.f_movement as f_move
-import functions.f_load_data as f_load
+import functions.load_data as f_load
 import os
 import pickle
 

@@ -1,6 +1,6 @@
 import unittest
 import pandas as pd
-from conn import calculate_volatility
+from full_connectedness import calculate_volatility
 
 class TestConn(unittest.TestCase):
 
@@ -39,4 +39,4 @@ class TestConn(unittest.TestCase):
         self.assertIsNotNone(accuracy)
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(verbosity=2)

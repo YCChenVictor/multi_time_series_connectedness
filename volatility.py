@@ -1,6 +1,6 @@
 # import modules
 import functions.f_volatility as f_vol
-import functions.f_load_data as f_load
+import functions.load_data as f_load
 import os
 import pickle
 
