@@ -6,7 +6,7 @@ import os
 # =================================
 
 
-def yang_zhang_volatility(data, n=2, clean=False):
+def yang_zhang_volatility(data, n=2):
     """
     :param data: a list with Open, High, Low, Close price
     :param n: the periods to obtain the average volatilitys
@@ -35,21 +35,7 @@ def yang_zhang_volatility(data, n=2, clean=False):
     # yang-zhang
     result = (vo + k * vt + (1 - k) * rs).apply(np.sqrt)
 
-    if clean:
-        return result.dropna()
-    else:
-        return result
-
-
-def daterange(date1, date2):
-    """
-    :param date1: start date
-    :param date2: end date
-    :return: a list of date
-    """
-    for n in range(int((date2 - date1).days) + 1):
-        yield date1 + datetime.timedelta(n)
-
+    return pd.concat([data['time'], result], axis=1)
 
 def date_format(date):
     list_date = date.split("-")
@@ -58,57 +44,31 @@ def date_format(date):
 
 
 class volatility:
-
-    def __init__(self, path, start_dt, end_dt):
-        # The variables we need to launch this class
+    def __init__(self, path, start_at, end_at):
         # the path filled with timeseries data going to calculate volatility
         self.path = path
         # the start date of the volatility data
-        self.start_dt = start_dt
+        self.start_at = start_at
         # the end date of the volatility data
-        self.end_dt = end_dt
-        # Variable generated in price_data_to_volatility
-        self.dict_data = None
+        self.end_at = end_at
         # Variable generated in periods_of_volatility
-        self.dataframe = None
+        self.volatilities = None
 
     # read the price data, set up dictionary and then calculate the volatility
     def price_data_to_volatility(self):
-        # Get list of all files and directories
         all_entries = os.listdir(self.path)
-        # Filter out only the files
         files = [entry for entry in all_entries if os.path.isfile(os.path.join(self.path, entry))]
 
-        dict_data = {}  # the dictionary
+        volatilities = None
         for i in range(len(files)):
-            dict_data[files[i]] = pd.read_csv(self.path + "/" + files[i])
+            timeseries_data = pd.read_csv(self.path + "/" + files[i])
+            timeseries_data = timeseries_data.loc[
+                    (timeseries_data["time"] >= self.start_at) & (timeseries_data["time"] <= self.end_at)]
+            timeseries_data = timeseries_data.interpolate()
+            volatility = yang_zhang_volatility(timeseries_data)
+            if volatilities is None:
+                volatilities = volatility
+            else:
+                volatilities = volatilities.merge(volatility, on='time', how='outer')
 
-        # deal with the Non-data problem
-        for i in range(len(dict_data)):
-            dict_data[files[i]] = dict_data[files[i]].interpolate()
-
-        for i in range(len(dict_data)):
-            vol_name = files[i] + '_vol'
-            dict_data[files[i]][vol_name] = yang_zhang_volatility(dict_data[files[i]])
-
-        self.dict_data = dict_data
-
-    # obtain specify periods of volatility
-    def periods_of_volatility(self):
-
-        list_date = []
-
-        for dt in daterange(self.start_dt, self.end_dt):
-            list_date.append(dt.strftime("%Y-%m-%d"))
-
-        # specify date here, create specified Date data
-        dataframe = pd.DataFrame({'Date': list_date})
-
-        dict_data = self.dict_data
-        names = self.names
-
-        for i in range(len(dict_data)):
-            volatility = dict_data[names[i]].iloc[:, [0, -1]]
-            dataframe = dataframe.merge(volatility, on='Date')
-
-        self.dataframe = dataframe
+        self.volatilities = volatilities

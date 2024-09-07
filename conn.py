@@ -7,7 +7,6 @@ def calculate_connectedness(start_at, end_at, files_path):
     # calculate volatility dataframe
     volatility = f_vol.volatility(files_path, start_at, end_at)
     volatility.price_data_to_volatility()
-    volatility.periods_of_volatility()
     volatility_dataframe = volatility.dataframe
     
     # calculate estimated coefficients
