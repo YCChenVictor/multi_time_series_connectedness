@@ -9,8 +9,7 @@ with open(save_path, 'rb') as f:
     volatilities = pickle.load(f)
 
 # start the rolling connectedness
-roll_conn = (f_roll.
-             Rolling_Connectedness(volatilities.dropna(), 20, 80))
+roll_conn = f_roll.Rolling_Connectedness(volatilities.dropna(), 20, 80)
 roll_conn.divide_timeseries_volatilities()
 roll_conn.calculate_rolling()
 

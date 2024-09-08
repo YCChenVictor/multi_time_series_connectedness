@@ -177,7 +177,7 @@ class Connectedness:
                                   zip(full_connectedness.index, names)),
                                   inplace=True)
 
-    def table_restructure(self):
+    def flatten_connectedness(self):
 
         connectedness = self.full_connectedness
 

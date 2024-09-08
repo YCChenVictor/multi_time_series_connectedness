@@ -17,7 +17,7 @@ class Rolling_Connectedness:
         self.data = data
         self.max_lag = max_lag
         self.data_periods = data_periods
-        self.name = list(data.columns[1:]) + ['all']
+        self.name = [col for col in data.columns if col != 'time'] + ['all']
 
         # save the calculated connectedness
         self.data_list = None
@@ -64,8 +64,8 @@ class Rolling_Connectedness:
         for data in data_list:
 
             # get start and end date
-            start_date = data["time"][0]
-            end_date = data["time"][periods-1]
+            start_date = data["time"].iloc[0]
+            end_date = data["time"].iloc[periods-1]
             period = start_date + " ~ " + end_date
 
             print("calculate connectedness for next period of %s, period: %s"
@@ -84,7 +84,7 @@ class Rolling_Connectedness:
             conn = f_conn.Connectedness(ols_coef, ols_sigma)
             conn.calculate_full_connectedness()
             conn.rename_table(self.name)
-            conn.table_restructure()
+            conn.flatten_connectedness()
             index += 1
 
             # return accuracy and restrcture_connectedness with period as row
