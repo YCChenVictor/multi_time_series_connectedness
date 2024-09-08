@@ -4,23 +4,19 @@ import functions.f_rolling_connectedness as f_roll
 
 # load volatility_dataframe
 file_path = os.path.dirname(os.path.realpath(__file__))
-save_path = file_path + '/docs/' + 'volatility.pickle'
+save_path = file_path + '/docs/' + 'volatilities.pickle'
 with open(save_path, 'rb') as f:
-    volatility_dataframe = pickle.load(f)
-
-# save name of the dataframe
-names = list(volatility_dataframe.columns.values)
-names.remove('Date')
-names.append("all")
+    volatilities = pickle.load(f)
 
 # start the rolling connectedness
 roll_conn = (f_roll.
-             Rolling_Connectedness(volatility_dataframe, 20, 80, names))
-roll_conn.divide_dataframe()
+             Rolling_Connectedness(volatilities.dropna(), 20, 80))
+roll_conn.divide_timeseries_volatilities()
 roll_conn.calculate_rolling()
 
 # obtain the rolling connectedness dataframe
 data = roll_conn.rolling_connectedness
+print(data)
 
 # save the volatility_dataframe into pickle
 file_path = os.path.dirname(os.path.realpath(__file__))

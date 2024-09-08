@@ -5,35 +5,31 @@ I should reveal the period of connectedness I am calculating, not just number.
 """
 # import the required module
 import functions.connectedness as f_conn
-import functions.coef as coef
+import functions.coef as f_coef
 import pandas as pd
 import datetime
 
 
 class Rolling_Connectedness:
 
-    def __init__(self, data, max_lag, data_periods, names):
+    def __init__(self, data, max_lag, data_periods):
         # to variable to run this module
         self.data = data
-        self.names = names
         self.max_lag = max_lag
         self.data_periods = data_periods
+        self.name = list(data.columns[1:]) + ['all']
 
         # save the calculated connectedness
         self.data_list = None
         self.rolling_connectedness = None
         self.accuracy_list = None
 
-    def divide_dataframe(self):
-
-        # required variables
+    def divide_timeseries_volatilities(self):
         dataframe = self.data
         periods = self.data_periods
 
-        # list to save the data
         data_list = []
 
-        # iteratively divide dataframe
         for i in range(len(dataframe)):
 
             # get divided data
@@ -54,7 +50,6 @@ class Rolling_Connectedness:
         data_list = self.data_list
         max_lag = self.max_lag
         periods = self.data_periods
-        names = self.names
 
         # create the list of the rolling dataframe
         connectedness_list = []
@@ -69,15 +64,15 @@ class Rolling_Connectedness:
         for data in data_list:
 
             # get start and end date
-            start_date = data["Date"][0]
-            end_date = data["Date"][periods-1]
+            start_date = data["time"][0]
+            end_date = data["time"][periods-1]
             period = start_date + " ~ " + end_date
 
             print("calculate connectedness for next period of %s, period: %s"
                   % (end_date, period))
 
             # coef and sigma_hat ####
-            coef = coef.Coef(data, max_lag)
+            coef = f_coef.Coef(data, max_lag)
             coef.f_ols_coef()
             ols_coef = coef.OLS_coef
             ols_sigma = coef.OLS_sigma
@@ -88,7 +83,7 @@ class Rolling_Connectedness:
             # connectedness
             conn = f_conn.Connectedness(ols_coef, ols_sigma)
             conn.calculate_full_connectedness()
-            conn.rename_table(names)
+            conn.rename_table(self.name)
             conn.table_restructure()
             index += 1
 
@@ -97,19 +92,15 @@ class Rolling_Connectedness:
             rest = conn.restructure_connectedness
             rest["accuracy"] = accuracy
 
-            # rename row name with the predict connectedness date
-            date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
-            date = date + datetime.timedelta(days=1)
-            date_list.append(date)
-
             # append into connectedness_list
             connectedness_list.append(rest)
 
             # combine them
             result = pd.concat(connectedness_list, ignore_index=True)
 
+        print(result)
         # add date to the calculated dataframe
-        result["Date"] = date_list
+        # result["time"] = date_list
 
         # save rolling connectedness in class
         self.rolling_connectedness = result
