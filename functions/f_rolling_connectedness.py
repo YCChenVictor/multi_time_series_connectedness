@@ -46,64 +46,33 @@ class Rolling_Connectedness:
         self.data_list = data_list
 
     def calculate_rolling(self):
-
-        data_list = self.data_list
-        max_lag = self.max_lag
-        periods = self.data_periods
-
-        # create the list of the rolling dataframe
         connectedness_list = []
-        date_list = []
-
-        # index
-        index = 0
-
-        # start to calculate rolling
-        # save_data = []
-
-        for data in data_list:
-
-            # get start and end date
+        for data in self.data_list:
             start_date = data["time"].iloc[0]
-            end_date = data["time"].iloc[periods-1]
+            end_date = data["time"].iloc[self.data_periods-1]
             period = start_date + " ~ " + end_date
-
             print("calculate connectedness for next period of %s, period: %s"
                   % (end_date, period))
 
-            # coef and sigma_hat ####
-            coef = f_coef.Coef(data, max_lag)
+            coef = f_coef.Coef(data, self.max_lag)
             coef.f_ols_coef()
             ols_coef = coef.OLS_coef
             ols_sigma = coef.OLS_sigma
 
-            # accuracy
             accuracy = coef.accuracy
 
-            # connectedness
             conn = f_conn.Connectedness(ols_coef, ols_sigma)
             conn.calculate_full_connectedness()
             conn.rename_table(self.name)
             conn.flatten_connectedness()
-            index += 1
 
-            # return accuracy and restrcture_connectedness with period as row
-            # name ##### add accuracy into dataframe
-            rest = conn.restructure_connectedness
-            rest["accuracy"] = accuracy
+            restructured_connectedness = conn.restructure_connectedness
+            restructured_connectedness["accuracy"] = accuracy
+            connectedness_list.append(restructured_connectedness)
 
-            # append into connectedness_list
-            connectedness_list.append(rest)
+            restructured_connectedness_dataframe = pd.concat(connectedness_list, ignore_index=True)
 
-            # combine them
-            result = pd.concat(connectedness_list, ignore_index=True)
-
-        print(result)
-        # add date to the calculated dataframe
-        # result["time"] = date_list
-
-        # save rolling connectedness in class
-        self.rolling_connectedness = result
+        self.rolling_connectedness = restructured_connectedness_dataframe
 
     def plot_rolling():
         pass
