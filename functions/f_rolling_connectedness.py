@@ -45,7 +45,7 @@ class Rolling_Connectedness:
 
         self.data_list = data_list
 
-    def calculate_rolling(self):
+    def calculate_rolling(self, callback_after_one_connectedness=None):
         connectedness_list = []
         for data in self.data_list:
             start_date = data["time"].iloc[0]
@@ -68,11 +68,13 @@ class Rolling_Connectedness:
 
             restructured_connectedness = conn.restructure_connectedness
             restructured_connectedness["accuracy"] = accuracy
+            if callback_after_one_connectedness:
+                callback_after_one_connectedness(restructured_connectedness)
             connectedness_list.append(restructured_connectedness)
 
-            restructured_connectedness_dataframe = pd.concat(connectedness_list, ignore_index=True)
+            restructured_connectedness_timeseries = pd.concat(connectedness_list, ignore_index=True)
 
-        self.rolling_connectedness = restructured_connectedness_dataframe
+        self.rolling_connectedness = restructured_connectedness_timeseries
 
     def plot_rolling():
         pass

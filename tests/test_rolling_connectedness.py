@@ -1,12 +1,12 @@
 import unittest
+from unittest.mock import Mock
 import functions.f_rolling_connectedness as f_roll
 from tests.data_utils import get_volatilities_data
 import pandas as pd
-from pandas.testing import assert_frame_equal
 import numpy as np
 
 
-class TestFullConnectedness(unittest.TestCase):
+class TestRollingConnectedness(unittest.TestCase):
     # def setUp(self):
 
     def test_divide_timeseries_volatilities(self):
@@ -45,6 +45,33 @@ class TestFullConnectedness(unittest.TestCase):
         assert result.shape[0] == 2
         assert result.columns.tolist() == expected_column_names
         assert list(np.round(result.iloc[0].values, 6)) == expected_values
+
+    def test_with_callback(self):
+        roll_conn = f_roll.Rolling_Connectedness(
+            pd.DataFrame(
+                columns=[
+                    "AUDNZD=X.csv",
+                    "AUDCAD=X.csv",
+                    "AUDUSD=X.csv",
+                    "CADCHF=X.csv",
+                    "AUDCHF=X.csv",
+                    "CADJPY=X.csv",
+                    "AUDJPY=X.csv",
+                ]
+            ),
+            20,
+            2,
+        )
+        roll_conn.data_list = [
+            get_volatilities_data().dropna(),
+            get_volatilities_data().dropna(),
+        ]
+
+        def callback(restructured_connectedness):
+            print("Callback called with:", restructured_connectedness)
+        callback_mock = Mock(side_effect=callback)
+        roll_conn.calculate_rolling(callback_after_one_connectedness=callback_mock)
+        self.assertEqual(callback_mock.call_count, 2)
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
