@@ -114,3 +114,6 @@ env
 
 #
 docs/
+
+# 
+run_test_scripy.py
