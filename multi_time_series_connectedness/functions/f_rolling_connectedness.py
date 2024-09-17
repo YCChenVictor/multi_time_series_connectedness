@@ -4,11 +4,9 @@ I should reveal the period of connectedness I am calculating, not just number.
 
 """
 # import the required module
-import functions.connectedness as f_conn
-import functions.coef as f_coef
+import multi_time_series_connectedness.functions.connectedness as f_conn
+import multi_time_series_connectedness.functions.coef as f_coef
 import pandas as pd
-import datetime
-
 
 class Rolling_Connectedness:
 
