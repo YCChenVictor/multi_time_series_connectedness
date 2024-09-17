@@ -1,8 +1,6 @@
 import argparse
-import functions.f_volatility as f_vol
-import functions.coef as f_coef
-import functions.connectedness as f_conn
-from functions.load_data import get_file_names
+import multi_time_series_connectedness.functions.coef as f_coef
+import multi_time_series_connectedness.functions.connectedness as f_conn
 import pandas as pd
 
 def calculate_connectedness(volatilities):
