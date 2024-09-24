@@ -65,7 +65,6 @@ def price_data_to_volatility(datasets):
 # python3 src/volatilities.py --path docs/market_prices --start_at 2024-09-06T00:00:00+01:00 --end_at 2024-09-06T22:27:00+01:00
 def main(start_at, end_at, directory, save_path=None):
     datasets = load_files(directory, start_at, end_at)
-    print(datasets)
     volatilities = price_data_to_volatility(datasets)
 
     if save_path:
