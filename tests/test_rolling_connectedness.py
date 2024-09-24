@@ -1,6 +1,8 @@
+# python3 -m unittest tests/test_rolling_connectedness.py
+
 import unittest
 from unittest.mock import Mock
-import multi_time_series_connectedness.functions.f_rolling_connectedness as f_roll
+import src.functions.f_rolling_connectedness as f_roll
 from tests.data_utils import get_volatilities_data
 import pandas as pd
 import numpy as np

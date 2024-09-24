@@ -1,7 +1,9 @@
+# python3 -m unittest tests/test_full_connectedness.py
+
 import unittest
 import pandas as pd
 from pandas.testing import assert_frame_equal
-from multi_time_series_connectedness.full_connectedness import calculate_connectedness
+from src.full_connectedness import calculate_connectedness
 from tests.data_utils import get_volatilities_data
 
 class TestFullConnectedness(unittest.TestCase):

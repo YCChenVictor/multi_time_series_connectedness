@@ -1,6 +1,6 @@
 import argparse
-import multi_time_series_connectedness.functions.coef as f_coef
-import multi_time_series_connectedness.functions.connectedness as f_conn
+from src.functions import coef as f_coef
+from src.functions import connectedness as f_conn
 import pandas as pd
 
 def calculate_connectedness(volatilities):
@@ -32,9 +32,8 @@ def main(path):
     print("Connectedness Results:", connectedness_results)
 
 if __name__ == "__main__":
-    # specify the path
     parser = argparse.ArgumentParser(description="Process some financial data.")
-    parser.add_argument('--path', type=str, help='Path to the data')
+    parser.add_argument('--path', type=str, help='Path to the volatilities pickle file')
 
     args = parser.parse_args()
     main(args.path)
