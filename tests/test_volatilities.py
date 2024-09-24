@@ -1,35 +1,43 @@
+# python3 -m unittest tests/test_volatilities.py
+
 import unittest
-from multi_time_series_connectedness.volatilities import calculate_volatility
+from src.volatilities import price_data_to_volatility
+import pandas as pd
+from io import StringIO
 
 class TestVolatilities(unittest.TestCase):
     def setUp(self):
-        self.test_dir = 'test_data'
-        os.makedirs(self.test_dir, exist_ok=True)
+        data_audcad = """
+        Unnamed: 0,time,symbol,Open,High,Low,Close
+        0,2024-09-06T00:00:00+01:00,AUDCAD=X,0.9097800254821777,0.9098600149154663,0.9097399711608887,0.9097599983215332
+        1,2024-09-06T00:01:00+01:00,AUDCAD=X,0.9097599983215332,0.909820020198822,0.9088900089263916,0.9097700119018555
+        2,2024-09-06T00:02:00+01:00,AUDCAD=X,0.9097200036048889,0.9099000096321106,0.9096599817276001,0.9098899960517883
+        3,2024-09-06T00:03:00+01:00,AUDCAD=X,0.909850001335144,0.9099100232124329,0.9097899794578552,0.9098399877548218
+        """
+        data_audchf = """
+        Unnamed: 0,time,symbol,Open,High,Low,Close
+        0,2024-09-06T00:00:00+01:00,AUDCHF=X,0.6707800254821777,0.6708600149154663,0.6707399711608887,0.6707599983215332
+        1,2024-09-06T00:01:00+01:00,AUDCHF=X,0.6707599983215332,0.670820020198822,0.6698900089263916,0.6707700119018555
+        2,2024-09-06T00:02:00+01:00,AUDCHF=X,0.5687999725341797,0.5689399838447571,0.5687400102615356,0.5688999891281128
+        3,2024-09-06T00:03:00+01:00,AUDCHF=X,0.568880021572113,0.5690000057220459,0.5688199996948242,0.5688899755477905
+        """
 
-#         ,time,symbol,Open,High,Low,Close
-# 0,2024-09-06T00:00:00+01:00,AUDCAD=X,0.9097800254821777,0.9098600149154663,0.9097399711608887,0.9097599983215332
-# 1,2024-09-06T00:01:00+01:00,AUDCAD=X,0.9097599983215332,0.909820020198822,0.9088900089263916,0.9097700119018555
+        df_audcad = pd.read_csv(StringIO(data_audcad), index_col=0)
+        df_audchf = pd.read_csv(StringIO(data_audchf), index_col=0)
 
-# ,time,symbol,Open,High,Low,Close
-# 0,2024-09-06T00:00:00+01:00,AUDCHF=X,0.5687500238418579,0.5688999891281128,0.5687500238418579,0.5688300132751465
-# 1,2024-09-06T00:01:00+01:00,AUDCHF=X,0.5688599944114685,0.5688999891281128,0.5681700110435486,0.5688400268554688
-
-        # Create fake CSV files
-        data1 = {'column1': [1, 2, 3], 'column2': [4, 5, 6]}
-        data2 = {'column1': [7, 8, 9], 'column2': [10, 11, 12]}
-
-        df1 = pd.DataFrame(data1)
-        df2 = pd.DataFrame(data2)
-
-        df1.to_csv(os.path.join(self.test_dir, 'test1.csv'), index=False)
-        df2.to_csv(os.path.join(self.test_dir, 'test2.csv'), index=False)
+        self.timeseries_data = {
+            'AUDCAD=X': df_audcad,
+            'AUDCHF=X': df_audchf
+        }
+        print(self.timeseries_data)
 
     def test_calculate_volatility(self):
-        result = calculate_volatility(self.timeseries_data)
+        result = price_data_to_volatility(self.timeseries_data)
+        print(result)
 
-        expected_df = pd.DataFrame(expected_data, index=expected_index)
-        # Compare the result with the expected DataFrame
-        assert_frame_equal(result, expected_df)
+        # expected_df = pd.DataFrame(expected_data, index=expected_index)
+        # # Compare the result with the expected DataFrame
+        # assert_frame_equal(result, expected_df)
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

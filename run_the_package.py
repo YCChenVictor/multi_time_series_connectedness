@@ -1,2 +1,0 @@
-import multi_time_series_connectedness
-print(multi_time_series_connectedness.__name__)
