@@ -8,8 +8,6 @@ from tests.data_utils import get_volatilities_data
 import src.functions.coef as f_coef
 
 class TestFullConnectedness(unittest.TestCase):
-    # To make sure it is correct, please calculate the connectedness by hand for once
-
     def setUp(self):
         self.volatilities = get_volatilities_data()
         coef = f_coef.Coef(self.volatilities.dropna(), 20)
