@@ -11,14 +11,14 @@ source venv/bin/activate
 pip3 install -r requirements.txt
 ```
 
-## Feature
+## Feature & Example Code
+* calculate volatility
+  ```
+  python3 volatilities.py --path docs/market_prices --start_at 2024-09-06T00:00:00+01:00 --end_at 2024-09-06T22:27:00+01:00
+  ```
 * calculate connectedness of all volatility
   ```
   python3 conn.py
-  ```
-* calculate volatility
-  ```
-  python3 volatility.py
   ```
 * calculate rolling connectedness
   ```

@@ -1,9 +1,11 @@
 # python3 -m unittest tests/test_volatilities.py
 
 import unittest
-from src.volatilities import price_data_to_volatility
 import pandas as pd
+import numpy as np
 from io import StringIO
+from src.functions.volatilities import price_data_to_volatility
+from pandas.testing import assert_frame_equal
 
 class TestVolatilities(unittest.TestCase):
     def setUp(self):
@@ -33,11 +35,19 @@ class TestVolatilities(unittest.TestCase):
 
     def test_calculate_volatility(self):
         result = price_data_to_volatility(self.timeseries_data)
-        print(result)
 
-        # expected_df = pd.DataFrame(expected_data, index=expected_index)
-        # # Compare the result with the expected DataFrame
-        # assert_frame_equal(result, expected_df)
+        data = {
+            'time': [
+                '2024-09-06T00:00:00+01:00',
+                '2024-09-06T00:01:00+01:00',
+                '2024-09-06T00:02:00+01:00',
+                '2024-09-06T00:03:00+01:00'
+            ],
+            'AUDCAD=X': [np.nan, np.nan, 0.000660, 0.000116],
+            'AUDCHF=X': [np.nan, np.nan, 0.082454, 0.082431]
+        }
+        expected_df = pd.DataFrame(data)
+        assert_frame_equal(result.round(6), expected_df.round(6))
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
