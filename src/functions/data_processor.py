@@ -1,3 +1,6 @@
+import os
+import pandas as pd
+
 def load_files(directory, start_at, end_at):
     all_entries = os.listdir(directory)
     files = [entry for entry in all_entries if os.path.isfile(os.path.join(directory, entry))]
