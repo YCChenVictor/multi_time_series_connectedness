@@ -1,9 +1,9 @@
 # python3 -m unittest tests/test_volatilities.py
 
 import unittest
-from src.volatilities import price_data_to_volatility
 import pandas as pd
 from io import StringIO
+from src.functions.volatilities import price_data_to_volatility
 
 class TestVolatilities(unittest.TestCase):
     def setUp(self):
