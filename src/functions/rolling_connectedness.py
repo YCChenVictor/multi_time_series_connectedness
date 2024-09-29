@@ -1,9 +1,3 @@
-"""
-I should reveal the period of connectedness I am calculating, not just number.
-
-
-"""
-# import the required module
 import src.functions.connectedness as f_conn
 import src.functions.coef as f_coef
 import pandas as pd
