@@ -12,43 +12,18 @@ pip3 install -r requirements.txt
 ```
 
 ## Feature & Example Code
+* calculate volatility
+  ```
+  python3 volatilities.py --path docs/market_prices --start_at 2024-09-06T00:00:00+01:00 --end_at 2024-09-06T22:27:00+01:00
+  ```
 * calculate connectedness of all volatility
   ```
   python3 conn.py
   ```
-* calculate volatility
+* calculate rolling connectedness
   ```
-  python3 volatility.py
+  python3 roll_conn.py
   ```
-
-### calculate rolling connectedness
-
-```python
-import os
-import pickle
-import src.functions.f_rolling_connectedness as f_roll
-
-# load volatility_dataframe
-file_path = os.path.dirname(os.path.realpath(__file__))
-save_path = file_path + '/docs/' + 'volatilities.pickle'
-with open(save_path, 'rb') as f:
-    volatilities = pickle.load(f)
-
-# start the rolling connectedness
-roll_conn = f_roll.Rolling_Connectedness(volatilities.dropna(), 20, 80)
-roll_conn.divide_timeseries_volatilities()
-roll_conn.calculate_rolling()
-
-# obtain the rolling connectedness dataframe
-data = roll_conn.rolling_connectedness
-print(data)
-
-# save the volatility_dataframe into pickle
-file_path = os.path.dirname(os.path.realpath(__file__))
-save_path = file_path + '/docs/' + 'roll_conn.pickle'
-with open(save_path, 'wb') as f:
-    pickle.dump(data, f)
-```
 
 ## How to use?
 * Put a folder with multiple Panel data into docs folder
