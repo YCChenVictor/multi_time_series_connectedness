@@ -5,14 +5,18 @@ import pandas as pd
 from pandas.testing import assert_frame_equal
 from src.functions.connectedness import Connectedness
 from tests.data_utils import get_volatilities_data
+import src.functions.coef as f_coef
 
 class TestFullConnectedness(unittest.TestCase):
     # To make sure it is correct, please calculate the connectedness by hand for once
 
     def setUp(self):
-        self.connectedness = Connectedness(0.5, 0.5)
-        # Load the data
         self.volatilities = get_volatilities_data()
+        coef = f_coef.Coef(self.volatilities.dropna(), 20)
+        coef.f_ols_coef()
+        ols_coef = coef.OLS_coef
+        ols_sigma = coef.OLS_sigma
+        self.connectedness = Connectedness(ols_coef, ols_sigma)
 
     def test_calculate_connectedness(self):
         result = self.connectedness.calculate_connectedness(self.volatilities).round(6) # the accuracy is 6 decimal places
