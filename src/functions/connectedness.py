@@ -9,13 +9,9 @@
 b means volatility of 2 cause volatility of 1
 
 """
-
-# import required modules
 import numpy as np
 import pandas as pd
-
-
-# connectedness
+from src.functions import coef as f_coef
 
 def var_p_to_var_1(ai_list):
     """
@@ -200,3 +196,27 @@ class Connectedness:
         flat_connectedness.columns = name_list
 
         self.restructure_connectedness = flat_connectedness
+
+    def calculate_connectedness(self, volatilities):
+        # get the variable names
+        names = list(volatilities.columns[1:])
+
+        # calculate estimated coefficients
+        max_lag = 20
+        coef = f_coef.Coef(volatilities.dropna(), max_lag)
+        coef.f_ols_coef()
+        ols_coef = coef.OLS_coef
+
+        # accuracy
+        accuracy = coef.accuracy
+        print("Accuracy:", accuracy)
+        ols_sigma = coef.OLS_sigma
+
+        self.ols_coef = ols_coef
+        self.ols_sigma = ols_sigma
+
+        self.calculate_full_connectedness()
+        self.rename_table(names + ["all"])
+        table = self.full_connectedness
+        return table
+        # conn.table_restructure()

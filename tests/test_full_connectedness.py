@@ -3,18 +3,19 @@
 import unittest
 import pandas as pd
 from pandas.testing import assert_frame_equal
-from src.full_connectedness import calculate_connectedness
+from src.functions.connectedness import Connectedness
 from tests.data_utils import get_volatilities_data
 
 class TestFullConnectedness(unittest.TestCase):
     # To make sure it is correct, please calculate the connectedness by hand for once
 
     def setUp(self):
+        self.connectedness = Connectedness(0.5, 0.5)
         # Load the data
         self.volatilities = get_volatilities_data()
 
     def test_calculate_connectedness(self):
-        result = calculate_connectedness(self.volatilities).round(6) # the accuracy is 6 decimal places
+        result = self.connectedness.calculate_connectedness(self.volatilities).round(6) # the accuracy is 6 decimal places
         
         # Define the expected DataFrame
         expected_data = {
