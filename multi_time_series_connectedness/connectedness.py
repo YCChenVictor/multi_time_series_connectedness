@@ -11,7 +11,8 @@ b means volatility of 2 cause volatility of 1
 """
 import numpy as np
 import pandas as pd
-from multi_time_series_connectedness.functions import coef as f_coef
+from multi_time_series_connectedness import coef as f_coef
+
 
 def var_p_to_var_1(ai_list):
     """
@@ -105,17 +106,21 @@ def generalized_variance_decomp(m, coef, sigma_hat, h=5):
 
 class Connectedness:
 
-    def __init__(self, coef, sigma_hat):
+    def __init__(self, volatilities):
 
-        # the varilables required to lauch this class
-        self.Coef = coef
-        self.Sigma_hat = sigma_hat
+        self.volatilities = volatilities
 
         # return the Full_Connectedness
         self.full_connectedness = None
-
         # restructure into flat shape
         self.restructure_connectedness = None
+
+    def calculate_coef(self, volatilities):
+        coef = f_coef.Coef(volatilities.dropna(), 20)
+        coef.f_ols_coef()
+        ols_coef = coef.OLS_coef
+        ols_sigma = coef.OLS_sigma
+        return ols_coef, ols_sigma
 
     def calculate_full_connectedness(self, h=1):
 
@@ -197,15 +202,18 @@ class Connectedness:
 
         self.restructure_connectedness = flat_connectedness
 
-    def calculate_connectedness(self, volatilities):
+    def calculate(self):
+        self.Coef, self.Sigma_hat = self.calculate_coef(self.volatilities)
+
         # get the variable names
-        names = list(volatilities.columns[1:])
+        names = list(self.volatilities.columns[1:])
 
         # calculate estimated coefficients
         max_lag = 20
-        coef = f_coef.Coef(volatilities.dropna(), max_lag)
+        coef = f_coef.Coef(self.volatilities.dropna(), max_lag)
         coef.f_ols_coef()
         ols_coef = coef.OLS_coef
+        # print(ols_coef)
 
         # accuracy
         accuracy = coef.accuracy
