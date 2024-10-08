@@ -1,7 +1,7 @@
 import argparse
 import pandas as pd
-from src.functions import connectedness as f_conn
-import src.functions.coef as f_coef
+from multi_time_series_connectedness.functions import connectedness as f_conn
+import multi_time_series_connectedness.functions.coef as f_coef
 
 def main(path):
     volatilities = pd.read_pickle(path)

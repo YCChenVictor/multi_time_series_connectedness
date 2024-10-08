@@ -1,7 +1,7 @@
 import pickle
 import argparse
-from src.functions.data_processor import load_files
-from src.functions.volatilities import price_data_to_volatility
+from multi_time_series_connectedness.functions.data_processor import load_files
+from multi_time_series_connectedness.functions.volatilities import price_data_to_volatility
 
 # python3 volatilities.py --path docs/market_prices --start_at 2024-09-06T00:00:00+01:00 --end_at 2024-09-06T22:27:00+01:00
 def main(start_at, end_at, directory, save_path=None):

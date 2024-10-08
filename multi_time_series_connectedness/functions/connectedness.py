@@ -11,7 +11,7 @@ b means volatility of 2 cause volatility of 1
 """
 import numpy as np
 import pandas as pd
-from src.functions import coef as f_coef
+from multi_time_series_connectedness.functions import coef as f_coef
 
 def var_p_to_var_1(ai_list):
     """

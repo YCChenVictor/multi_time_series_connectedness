@@ -4,7 +4,7 @@ import unittest
 import pandas as pd
 import numpy as np
 from io import StringIO
-from src.functions.volatilities import price_data_to_volatility
+from multi_time_series_connectedness.functions.volatilities import price_data_to_volatility
 from pandas.testing import assert_frame_equal
 
 class TestVolatilities(unittest.TestCase):

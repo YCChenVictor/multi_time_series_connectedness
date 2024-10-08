@@ -3,9 +3,9 @@
 import unittest
 import pandas as pd
 from pandas.testing import assert_frame_equal
-from src.functions.connectedness import Connectedness
+from multi_time_series_connectedness.functions.connectedness import Connectedness
 from tests.data_utils import get_volatilities_data
-import src.functions.coef as f_coef
+import multi_time_series_connectedness.functions.coef as f_coef
 
 class TestFullConnectedness(unittest.TestCase):
     def setUp(self):

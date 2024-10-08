@@ -1,5 +1,5 @@
-import src.functions.connectedness as f_conn
-import src.functions.coef as f_coef
+import multi_time_series_connectedness.functions.connectedness as f_conn
+import multi_time_series_connectedness.functions.coef as f_coef
 import pandas as pd
 
 class Rolling_Connectedness:

@@ -1,6 +1,6 @@
 import os
 import pickle
-import src.functions.rolling_connectedness as f_roll
+import multi_time_series_connectedness.functions.rolling_connectedness as f_roll
 
 # load volatility_dataframe
 file_path = os.path.dirname(os.path.realpath(__file__))
