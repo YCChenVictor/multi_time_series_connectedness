@@ -22,7 +22,7 @@ pip3 install -r requirements.txt
   ```
 * calculate rolling connectedness
   ```
-  python3 roll_conn.py
+  python3 rolling_connectedness.py
   ```
 
 ## How to use?

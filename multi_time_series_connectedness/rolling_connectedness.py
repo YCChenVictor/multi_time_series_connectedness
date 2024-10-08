@@ -1,8 +1,9 @@
-import src.functions.connectedness as f_conn
-import src.functions.coef as f_coef
+from multi_time_series_connectedness.connectedness import Connectedness
 import pandas as pd
+import pickle
 
-class Rolling_Connectedness:
+
+class RollingConnectedness:
 
     def __init__(self, data, max_lag, data_periods):
         # to variable to run this module
@@ -37,7 +38,7 @@ class Rolling_Connectedness:
 
         self.data_list = data_list
 
-    def calculate_rolling(self, callback_after_one_connectedness=None):
+    def calculate(self, store_result_at, callback_after_one_connectedness=None):
         connectedness_list = []
         for data in self.data_list:
             start_date = data["time"].iloc[0]
@@ -46,20 +47,12 @@ class Rolling_Connectedness:
             print("calculate connectedness for next period of %s, period: %s"
                   % (end_date, period))
 
-            coef = f_coef.Coef(data, self.max_lag)
-            coef.f_ols_coef()
-            ols_coef = coef.OLS_coef
-            ols_sigma = coef.OLS_sigma
-
-            accuracy = coef.accuracy
-
-            conn = f_conn.Connectedness(ols_coef, ols_sigma)
+            conn = Connectedness(data)
             conn.calculate_full_connectedness()
             conn.rename_table(self.name)
             conn.flatten_connectedness()
 
             restructured_connectedness = conn.restructure_connectedness
-            restructured_connectedness["accuracy"] = accuracy
             if callback_after_one_connectedness:
                 callback_after_one_connectedness(restructured_connectedness)
             connectedness_list.append(restructured_connectedness)
@@ -67,6 +60,9 @@ class Rolling_Connectedness:
             restructured_connectedness_timeseries = pd.concat(connectedness_list, ignore_index=True)
 
         self.rolling_connectedness = restructured_connectedness_timeseries
+
+        with open(store_result_at, 'wb') as f:
+            pickle.dump(self.rolling_connectedness, f)
 
     def plot_rolling():
         pass
