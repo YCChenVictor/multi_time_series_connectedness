@@ -55,7 +55,5 @@ class Volatility:
         datasets = load_files(directory, start_at, end_at)
         volatilities = self.price_data_to_volatility(datasets)
 
-        if save_path:
-            with open(save_path, 'wb') as f:
-                pickle.dump(volatilities, f)
-            return
+        with open(save_path, 'wb') as f:
+            pickle.dump(volatilities, f)

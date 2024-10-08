@@ -107,7 +107,7 @@ def generalized_variance_decomp(m, coef, sigma_hat, h=5):
 class Connectedness:
 
     def __init__(self, volatilities):
-
+        self.Coef, self.Sigma_hat = self.calculate_coef(volatilities)
         self.volatilities = volatilities
 
         # return the Full_Connectedness
@@ -203,25 +203,8 @@ class Connectedness:
         self.restructure_connectedness = flat_connectedness
 
     def calculate(self):
-        self.Coef, self.Sigma_hat = self.calculate_coef(self.volatilities)
-
         # get the variable names
         names = list(self.volatilities.columns[1:])
-
-        # calculate estimated coefficients
-        max_lag = 20
-        coef = f_coef.Coef(self.volatilities.dropna(), max_lag)
-        coef.f_ols_coef()
-        ols_coef = coef.OLS_coef
-        # print(ols_coef)
-
-        # accuracy
-        accuracy = coef.accuracy
-        print("Accuracy:", accuracy)
-        ols_sigma = coef.OLS_sigma
-
-        self.ols_coef = ols_coef
-        self.ols_sigma = ols_sigma
 
         self.calculate_full_connectedness()
         self.rename_table(names + ["all"])
