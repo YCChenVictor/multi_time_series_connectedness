@@ -19,7 +19,7 @@ def var_p_to_var_1(ai_list):
     :param ai_list: the Coef calculated
     :return: the coef of VAR1
     """
-    ar1_coef = np.zeros((7, 1)) # You should change the number 7 to the number of variables. I mean, why it is 7?
+    ar1_coef = np.zeros((len(ai_list[0]), 1)) # You should change the number 7 to the number of variables. I mean, why it is 7?
     for coef_i in ai_list:
         ar1_coef = np.column_stack((ar1_coef, coef_i))
     ar1_coef = np.delete(ar1_coef, 0, 1)
