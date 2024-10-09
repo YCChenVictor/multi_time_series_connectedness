@@ -73,6 +73,7 @@ def aic(mle_sigma_estimates, coef, t):
     length = coef.shape[0] * coef.shape[1]
     eq_0 = np.count_nonzero(coef == 0)
     length = length - eq_0
+    # if the size of data is too small, then the det may be 0, meaning it can not estimate it
     aic_result = math.log(np.linalg.det(mle_sigma_estimates)) + 2 / t * length
     return aic_result
 
