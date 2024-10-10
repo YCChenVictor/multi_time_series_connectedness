@@ -39,12 +39,12 @@ class RollingConnectedness:
         self.data_list = data_list
 
     def calculate(self, store_result_at, callback_after_one_connectedness=None):
-        connectedness_list = []
+        restructured_connectedness_timeseries = pd.DataFrame()
         for data in self.data_list:
             start_date = data["time"].iloc[0]
             end_date = data["time"].iloc[self.data_periods-1]
             period = start_date + " ~ " + end_date
-            print("calculate connectedness for next period of %s, period: %s"
+            print("calculate connectedness for period, %s with data between %s"
                   % (end_date, period))
 
             conn = Connectedness(data)
@@ -55,9 +55,10 @@ class RollingConnectedness:
             restructured_connectedness = conn.restructure_connectedness
             if callback_after_one_connectedness:
                 callback_after_one_connectedness(restructured_connectedness)
-            connectedness_list.append(restructured_connectedness)
-
-            restructured_connectedness_timeseries = pd.concat(connectedness_list, ignore_index=True)
+            restructured_connectedness_timeseries = pd.concat(
+                [restructured_connectedness_timeseries, restructured_connectedness], 
+                ignore_index=True
+            )
 
         self.rolling_connectedness = restructured_connectedness_timeseries
 
