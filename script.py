@@ -5,7 +5,7 @@ import os
 
 if __name__ == "__main__":
     volatility = Volatility(n=2)
-    volatility.calculate("2024-10-09T00:00:00+01:00", "2024-10-09T09:59:00+01:00", "docs/market_prices", "docs/volatilities.pickle")
+    volatility.calculate("docs/market_prices", "docs/volatilities.pickle")
 
     volatilities = pd.read_pickle("docs/volatilities.pickle")
 

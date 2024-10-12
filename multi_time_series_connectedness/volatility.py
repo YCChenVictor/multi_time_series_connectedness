@@ -1,7 +1,7 @@
 import pickle
 import pandas as pd
 import numpy as np
-from .data_processor import load_files
+import os
 
 
 class Volatility:
@@ -51,8 +51,11 @@ class Volatility:
 
         return volatilities
 
-    def calculate(self, start_at, end_at, directory, save_path=None):
-        datasets = load_files(directory, start_at, end_at)
+    def calculate(self, directory, save_path=None):
+        datasets = {}
+        for filename in os.listdir(directory):
+            if filename.endswith('.csv'):
+                datasets[filename] = pd.read_csv(os.path.join(directory, filename))
         volatilities = self.price_data_to_volatility(datasets)
 
         with open(save_path, 'wb') as f:
