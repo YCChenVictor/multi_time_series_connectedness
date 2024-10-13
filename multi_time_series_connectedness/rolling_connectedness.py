@@ -56,9 +56,9 @@ class RollingConnectedness:
                 [restructured_connectedness_timeseries, restructured_connectedness], 
                 ignore_index=False
             )
-
-        self.rolling_connectedness = restructured_connectedness_timeseries
+        restructured_connectedness_timeseries['forecast_at'] = restructured_connectedness_timeseries.index.to_series().shift(-conn.forecast_at_next_period)
         print(restructured_connectedness_timeseries)
+        self.rolling_connectedness = restructured_connectedness_timeseries
 
         with open(store_result_at, 'wb') as f:
             pickle.dump(self.rolling_connectedness, f)

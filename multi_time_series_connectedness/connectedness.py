@@ -105,9 +105,8 @@ def generalized_variance_decomp(m, coef, sigma_hat, h=5):
 
 
 class Connectedness:
-
-    def __init__(self, volatilities, forecast_at=1):
-        self.forecast_at = forecast_at
+    def __init__(self, volatilities, forecast_at_next_period=1):
+        self.forecast_at_next_period = forecast_at_next_period
         self.start_at = volatilities["time"].iloc[0]
         self.end_at = volatilities["time"].iloc[-1]
         self.Coef, self.Sigma_hat = self.calculate_coef(volatilities)
@@ -140,7 +139,7 @@ class Connectedness:
         # obtain the generalized variance decomposition after 5 periods
         # each variable fluctuates one time
         for i in range(1, (n + 1)):
-            GVD = generalized_variance_decomp(i, coef, sigma_hat, self.forecast_at)[self.forecast_at - 1]
+            GVD = generalized_variance_decomp(i, coef, sigma_hat, self.forecast_at_next_period)[self.forecast_at_next_period - 1]
             connectedness.append(GVD)
 
         # transpose
@@ -205,7 +204,7 @@ class Connectedness:
 
         flat_connectedness['start_at'] = self.start_at
         flat_connectedness['end_at'] = self.end_at
-        flat_connectedness['forecast_at'] = self.forecast_at
+        flat_connectedness['forecast_at_next_period'] = self.forecast_at_next_period
 
         self.restructure_connectedness = flat_connectedness
 
