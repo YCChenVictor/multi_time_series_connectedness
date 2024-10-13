@@ -51,11 +51,13 @@ class Volatility:
 
         return volatilities
 
-    def calculate(self, directory, save_path=None):
+    def calculate(self, directory, start_at, end_at, save_path=None):
         datasets = {}
         for filename in os.listdir(directory):
             if filename.endswith('.csv'):
-                datasets[filename] = pd.read_csv(os.path.join(directory, filename))
+                data = pd.read_csv(os.path.join(directory, filename))
+                filtered_data = data[(data['time'] >= start_at) & (data['time'] <= end_at)]
+                datasets[filename] = filtered_data
         volatilities = self.price_data_to_volatility(datasets)
 
         with open(save_path, 'wb') as f:
