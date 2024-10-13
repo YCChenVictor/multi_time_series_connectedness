@@ -2,6 +2,7 @@ from multi_time_series_connectedness.connectedness import Connectedness
 import pandas as pd
 import pickle
 import sys
+import os
 
 
 class RollingConnectedness:
@@ -60,6 +61,8 @@ class RollingConnectedness:
         print(restructured_connectedness_timeseries)
         self.rolling_connectedness = restructured_connectedness_timeseries
 
+        directory = os.path.dirname(store_result_at)
+        os.makedirs(directory, exist_ok=True)
         with open(store_result_at, 'wb') as f:
             pickle.dump(self.rolling_connectedness, f)
 
