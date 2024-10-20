@@ -2,6 +2,7 @@ import pickle
 import pandas as pd
 import numpy as np
 import os
+import glob
 
 
 class Volatility:
@@ -51,13 +52,17 @@ class Volatility:
 
         return volatilities
 
-    def calculate(self, directory, start_at, end_at, save_path=None):
+    # check this one here, use unix timestamp
+    def calculate(self, directory, save_path=None, start_at=None, end_at=None):
         datasets = {}
-        for filename in os.listdir(directory):
-            if filename.endswith('.csv'):
-                data = pd.read_csv(os.path.join(directory, filename))
-                filtered_data = data[(data['time'] >= start_at) & (data['time'] <= end_at)]
-                datasets[filename] = filtered_data
+        for filepath in glob.glob(os.path.join(directory, '*.csv')):
+            data = pd.read_csv(filepath)
+            if start_at is None:
+                start_at = data['time'].iloc[0]
+            if end_at is None:
+                end_at = data['time'].iloc[-1]
+            filtered_data = data[(data['time'] >= start_at) & (data['time'] <= end_at)]
+            datasets[os.path.basename(filepath)] = filtered_data
         volatilities = self.price_data_to_volatility(datasets)
 
         with open(save_path, 'wb') as f:

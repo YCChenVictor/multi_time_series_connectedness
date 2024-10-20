@@ -6,32 +6,26 @@ import os
 
 
 class RollingConnectedness:
-    def __init__(self, data, max_lag, data_periods, start_at, end_at):
+    def __init__(self, data, max_lag, data_periods):
         self.data = data
         self.max_lag = max_lag
         self.data_periods = data_periods
         self.name = [col for col in data.columns if col != 'time'] + ['all']
-        self.start_at = start_at
-        self.end_at = end_at
 
         # save the calculated connectedness
-        self.split_data = None
+        self.split_data = {}
         self.rolling_connectedness = None
         self.accuracy_list = None
 
     def divide_timeseries_volatilities(self):
-        data_eariler_than_start_at = self.data[self.data['time'] <= self.start_at]
-        if (len(data_eariler_than_start_at) < self.data_periods):
+        if (len(self.data) < self.data_periods):
             print("There is not enough data for the first connectedness")
             sys.exit()
-
-        filtered_time = self.data[(self.data['time'] > self.start_at) & (self.data['time'] <= self.end_at)]['time']
-        print(filtered_time)
-        split_data = {}
-        for index, time in filtered_time.items():
-            last_rows = self.data.iloc[index-self.data_periods - 1:index - 1] # I think this line will cause problem
-            split_data[time] = last_rows
-        self.split_data = split_data
+        self.data = self.data.reset_index(drop=True)
+        num_rows = self.data.shape[0]
+        for i in range(num_rows - self.data_periods):
+            subset_df = self.data.iloc[i:(i+self.data_periods)]
+            self.split_data[int(subset_df.iloc[-1]['time'])] = subset_df
 
     def calculate(self, store_result_at, callback_after_one_connectedness=None):
         self.divide_timeseries_volatilities()
@@ -39,7 +33,7 @@ class RollingConnectedness:
         for key, data in self.split_data.items():
             start_date = data["time"].iloc[0]
             end_date = data["time"].iloc[self.data_periods-1]
-            period = start_date + " ~ " + end_date
+            period = f"{start_date} ~ {end_date}"
             print("calculate connectedness for period, %s with data between %s"
                   % (end_date, period))
 
