@@ -11,6 +11,8 @@ b means volatility of 2 cause volatility of 1
 """
 import numpy as np
 import pandas as pd
+import json
+
 from multi_time_series_connectedness import coef as f_coef
 
 
@@ -207,6 +209,23 @@ class Connectedness:
         flat_connectedness['forecast_at_next_period'] = self.forecast_at_next_period
 
         self.restructure_connectedness = flat_connectedness
+
+    def store_graph_data(self):
+        no_all_connectedness = self.full_connectedness.iloc[:-1, :-1]
+        nodes = []
+        edges = []
+
+        for row in no_all_connectedness.index:
+            nodes.append({"id": row, "name": row})
+            for col in no_all_connectedness.columns:
+                weight = no_all_connectedness.loc[row, col]
+                if weight > 0 and row != col:
+                    edges.append({"source": row, "target": col, "value": weight})
+
+        # Save as JSON
+        graph_data = {"nodes": nodes, "links": edges}
+        with open("graph_data.json", "w") as f:
+            json.dump(graph_data, f)
 
     def calculate(self):
         # get the variable names
