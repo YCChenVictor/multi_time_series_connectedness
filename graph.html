@@ -23,6 +23,12 @@
 </head>
 <body>
     <script>
+        function calculateNodeSize(to_other) {
+            const minSize = 1; // Minimum size of the node
+            const maxSize = 20; // Maximum size of the node
+            return minSize + (maxSize - minSize) * to_other;
+        }
+
         // Load data
         d3.json("graph_data.json").then(function(graph) {
             const width = 800;
@@ -40,6 +46,11 @@
                 .force("center", d3.forceCenter(width / 2, height / 2))
                 .force("collision", d3.forceCollide().radius(20));
 
+            // Define color scale
+            const colorScale = d3.scaleLinear()
+                .domain([0, 1])
+                .range(["blue", "red"]);
+
             // Draw links (edges) between nodes
             const link = svg.append("g")
                 .attr("class", "links")
@@ -56,8 +67,11 @@
                 .data(graph.nodes)
                 .enter().append("circle")
                 .attr("class", "node")
-                .attr("r", 8)
-                .attr("fill", "steelblue")
+                .attr("r", d => calculateNodeSize(d.to_other)) // The bigger the node, the more fluctuations it gives to other nodes
+                .style("fill", (d) => {
+                    console.log(`Node ID: ${d.id}, from_other: ${d.from_other}, to_other: ${d.to_other}, color: ${colorScale(d.from_other)}`);
+                    return colorScale(d.from_other) // The more red, the more it receives fluctuations from other nodes
+                })
                 .call(drag(simulation));
 
             // Add tooltips to display node ID on hover
