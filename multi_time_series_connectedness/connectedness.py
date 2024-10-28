@@ -215,7 +215,7 @@ class Connectedness:
         edges = []
 
         for row in no_all_connectedness.index:
-            nodes.append({"id": row, "name": row})
+            nodes.append({"id": row, "name": row, "to_other": self.full_connectedness.iloc[-1].loc[row], "from_other": self.full_connectedness.loc[row].iloc[-1]})
             for col in no_all_connectedness.columns:
                 weight = no_all_connectedness.loc[row, col]
                 if weight > 0 and row != col:
@@ -233,4 +233,5 @@ class Connectedness:
         self.calculate_full_connectedness()
         self.rename_table(names + ["to_other"], names + ["from_other"])
         table = self.full_connectedness
+        print(table)
         return table
