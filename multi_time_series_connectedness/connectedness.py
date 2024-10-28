@@ -34,7 +34,7 @@ def var_p_to_var_1(ai_list):
     return ar1_coef
 
 
-def ar1_coef_to_psi(coef, h=5):
+def ar1_coef_to_psi(coef, h=1):
     """
     :param coef: the coef estimated
     :param h: the period of predicted future from now
@@ -59,7 +59,7 @@ def ar1_coef_to_psi(coef, h=5):
     return psi
 
 
-def theta(coef, sigma_hat, h=5):
+def theta(coef, sigma_hat, h=1):
     p = np.linalg.cholesky(sigma_hat)
     n = coef.shape[0]
     matrix = np.zeros(shape=(n, n))
@@ -75,7 +75,7 @@ def theta(coef, sigma_hat, h=5):
     return theta_unit, theta_std
 
 
-def generalized_variance_decomp(m, coef, sigma_hat, h=5):
+def generalized_variance_decomp(m, coef, sigma_hat, h=1):
     n = coef.shape[0]
     i_k = np.identity(n)
     m_i = i_k[:, (m-1)]
@@ -102,7 +102,7 @@ def generalized_variance_decomp(m, coef, sigma_hat, h=5):
         num_fill = (np.square(np.linalg.multi_dot((m_i, psi[l], sigma_hat))) +
                     num[l-1])
         num.append(num_fill)
-        decomp.append(num_fill*inv_sigma2/den_fill)
+        decomp.append(num_fill*inv_sigma2/den_fill) # num_fill*inv_sigma2/den_fill mean a component gives rise to an overall variance
     return decomp
 
 
@@ -127,7 +127,6 @@ class Connectedness:
         return ols_coef, ols_sigma
 
     def calculate_full_connectedness(self):
-
         # input required variable
         coef = self.Coef
         sigma_hat = self.Sigma_hat
@@ -138,9 +137,9 @@ class Connectedness:
         # start to calculate connectedness
         connectedness = []
 
-        # obtain the generalized variance decomposition after 5 periods
         # each variable fluctuates one time
         for i in range(1, (n + 1)):
+            # Each GVD means this current node fluctuates and the other nodes are affected
             GVD = generalized_variance_decomp(i, coef, sigma_hat, self.forecast_at_next_period)[self.forecast_at_next_period - 1]
             connectedness.append(GVD)
 
@@ -175,11 +174,11 @@ class Connectedness:
 
         self.full_connectedness = pd.DataFrame(connectedness_table)
 
-    def rename_table(self, names):
+    def rename_table(self, row_names, col_names):
         full_connectedness = self.full_connectedness
-        full_connectedness.columns = names
+        full_connectedness.columns = col_names
         full_connectedness.rename(index=dict(
-                                  zip(full_connectedness.index, names)),
+                                  zip(full_connectedness.index, row_names)),
                                   inplace=True)
 
     def flatten_connectedness(self):
@@ -193,7 +192,7 @@ class Connectedness:
         name_list = []
         for col_name in col_names:
             for row_name in row_names:
-                name = col_name + "_->_" + row_name
+                name = col_name + "_to_" + row_name
                 name_list.append(name)
 
         # get the restructure connectedness value ##
@@ -232,7 +231,6 @@ class Connectedness:
         names = list(self.volatilities.columns[1:])
 
         self.calculate_full_connectedness()
-        self.rename_table(names + ["all"])
+        self.rename_table(names + ["to_other"], names + ["from_other"])
         table = self.full_connectedness
         return table
-        # conn.table_restructure()
