@@ -10,7 +10,7 @@ class RollingConnectedness:
         self.data = data
         self.max_lag = max_lag
         self.data_periods = data_periods
-        self.name = [col for col in data.columns if col != 'time'] + ['all']
+        self.names = [col for col in data.columns if col != 'time']
 
         # save the calculated connectedness
         self.split_data = {}
@@ -39,7 +39,7 @@ class RollingConnectedness:
 
             conn = Connectedness(data)
             conn.calculate_full_connectedness()
-            conn.rename_table(self.name)
+            conn.rename_table(self.names + ["to_other"], self.names + ["from_other"])
             conn.flatten_connectedness()
 
             restructured_connectedness = conn.restructure_connectedness
