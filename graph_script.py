@@ -6,7 +6,7 @@ if __name__ == "__main__":
     volatility = Volatility(n=2)
     volatility.calculate("docs/market_prices", "docs/volatilities.pickle")
     volatilities = pd.read_pickle("docs/volatilities.pickle")
-    conn = Connectedness(volatilities.dropna(), 5)
+    conn = Connectedness(volatilities.dropna(), 1)
     conn.calculate()
     conn.store_graph_data()
     conn.flatten_connectedness()
