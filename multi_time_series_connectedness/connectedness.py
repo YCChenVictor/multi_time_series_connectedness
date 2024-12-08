@@ -83,7 +83,6 @@ def generalized_variance_decomp(m, coef, sigma_hat, h=1):
     theta_value = theta(coef, sigma_hat, h)[1]
     diag = np.diagonal(sigma_hat)
     inv_sigma2 = 1/diag
-    # i = 0
     den = []
     num = []
     decomp = []
@@ -94,21 +93,21 @@ def generalized_variance_decomp(m, coef, sigma_hat, h=1):
     num_fill = np.square(np.linalg.multi_dot((m_i, psi[0], sigma_hat)))
     num.append(num_fill)
     decomp.append(num_fill * inv_sigma2 / den_fill)
-    for l in range(1, h):
-        den_fill = den[l-1] + (np.linalg.
-                               multi_dot((m_i, theta_value[l], theta_value[l].T,
-                                          m_i[np.newaxis].T)))
-        den.append(den_fill)
-        num_fill = (np.square(np.linalg.multi_dot((m_i, psi[l], sigma_hat))) +
-                    num[l-1])
-        num.append(num_fill)
-        decomp.append(num_fill*inv_sigma2/den_fill) # num_fill*inv_sigma2/den_fill mean a component gives rise to an overall variance
+
+    for l in range(1, h): # start from 1 to match the future period notation, 1 -> next period, 2 -> next next period, ...
+        # notice, the l, goes from 1 to h-1, accumulating the plucked variance
+        den_fill = den[l-1] + np.linalg.multi_dot((m_i, theta_value[l], theta_value[l].T, m_i[np.newaxis].T))
+        den.append(den_fill) # the forecast error variance of specific node
+        num_fill = num[l-1] + np.square(np.linalg.multi_dot((m_i, psi[l], sigma_hat)))
+        num.append(num_fill) # the cause from a node to this specific node's forecast error variance
+        decomp.append(num_fill*inv_sigma2/den_fill)
+
     return decomp
 
 
 class Connectedness:
-    def __init__(self, volatilities, forecast_at_next_period=1):
-        self.forecast_at_next_period = forecast_at_next_period
+    def __init__(self, volatilities, forecast_period=1):
+        self.forecast_period = forecast_period
         self.start_at = volatilities["time"].iloc[0]
         self.end_at = volatilities["time"].iloc[-1]
         self.Coef, self.Sigma_hat = self.calculate_coef(volatilities)
@@ -137,10 +136,10 @@ class Connectedness:
         # start to calculate connectedness
         connectedness = []
 
-        # each variable fluctuates one time
+        # decompose the variance of each node from 1 to n+1 node and only choose the period we care, forecast_period
         for i in range(1, (n + 1)):
-            # Each GVD means this current node fluctuates and the other nodes are affected
-            GVD = generalized_variance_decomp(i, coef, sigma_hat, self.forecast_at_next_period)[self.forecast_at_next_period - 1]
+            GVD = generalized_variance_decomp(i, coef, sigma_hat, self.forecast_period)[self.forecast_period - 1]
+            # The value of GVD is how much of the variance of the forecast error of node i is due to the other nodes
             connectedness.append(GVD)
 
         # transpose
@@ -205,7 +204,7 @@ class Connectedness:
 
         flat_connectedness['start_at'] = self.start_at
         flat_connectedness['end_at'] = self.end_at
-        flat_connectedness['forecast_at_next_period'] = self.forecast_at_next_period
+        flat_connectedness['forecast_period'] = self.forecast_period
 
         self.restructure_connectedness = flat_connectedness
 
