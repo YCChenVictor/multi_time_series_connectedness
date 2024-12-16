@@ -21,7 +21,7 @@ def var_p_to_var_1(ai_list):
     :param ai_list: the Coef calculated
     :return: the coef of VAR1
     """
-    ar1_coef = np.zeros((len(ai_list[0]), 1)) # You should change the number 7 to the number of variables. I mean, why it is 7?
+    ar1_coef = np.zeros((len(ai_list[0]), 1))
     for coef_i in ai_list:
         ar1_coef = np.column_stack((ar1_coef, coef_i))
     ar1_coef = np.delete(ar1_coef, 0, 1)
@@ -48,7 +48,7 @@ def ar1_coef_to_psi(coef, h=1):
     ai_list = []
     for i in range(1, int(lag) + 1):
         ai_list.append(coef[:, 0:n])
-        coef = np.delete(coef, np.s_[0:7], 1)
+        coef = np.delete(coef, np.s_[0:n], 1)
     ar1_coef = var_p_to_var_1(ai_list)
     psi = []
     psi.append(i_k)
@@ -106,11 +106,11 @@ def generalized_variance_decomp(m, coef, sigma_hat, h=1):
 
 
 class Connectedness:
-    def __init__(self, volatilities, forecast_period=1):
+    def __init__(self, volatilities, max_lag, forecast_period=1):
         self.forecast_period = forecast_period
         self.start_at = volatilities["time"].iloc[0]
         self.end_at = volatilities["time"].iloc[-1]
-        self.Coef, self.Sigma_hat = self.calculate_coef(volatilities)
+        self.Coef, self.Sigma_hat = self.calculate_coef(volatilities, max_lag)
         self.volatilities = volatilities
 
         # return the Full_Connectedness
@@ -118,8 +118,8 @@ class Connectedness:
         # restructure into flat shape
         self.restructure_connectedness = None
 
-    def calculate_coef(self, volatilities):
-        coef = f_coef.Coef(volatilities.dropna(), 20)
+    def calculate_coef(self, volatilities, max_lag):
+        coef = f_coef.Coef(volatilities.dropna(), max_lag)
         coef.f_ols_coef()
         ols_coef = coef.OLS_coef
         ols_sigma = coef.OLS_sigma
@@ -232,5 +232,4 @@ class Connectedness:
         self.calculate_full_connectedness()
         self.rename_table(names + ["to_other"], names + ["from_other"])
         table = self.full_connectedness
-        print(table)
         return table

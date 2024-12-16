@@ -1,7 +1,5 @@
-from multi_time_series_connectedness import Volatility, Connectedness, RollingConnectedness
+from multi_time_series_connectedness import Volatility, RollingConnectedness
 import pandas as pd
-import pickle
-import os
 
 if __name__ == "__main__":
     max_lag = 20
@@ -9,5 +7,8 @@ if __name__ == "__main__":
     volatility = Volatility(n=2)
     volatility.calculate("docs/market_prices", "docs/volatilities.pickle")
     volatilities = pd.read_pickle("docs/volatilities.pickle")
-    roll_conn = RollingConnectedness(volatilities.dropna(), max_lag, periods_per_volatility)
-    roll_conn.calculate("docs/roll_conn.pickle")
+    roll_conn = RollingConnectedness(
+        volatilities.dropna(), max_lag, periods_per_volatility
+    )
+    roll_conn.calculate()
+    roll_conn.store("docs/roll_conn.pickle")

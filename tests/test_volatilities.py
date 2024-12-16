@@ -4,7 +4,7 @@ import unittest
 import pandas as pd
 import numpy as np
 from io import StringIO
-from multi_time_series_connectedness.functions.volatilities import price_data_to_volatility
+from multi_time_series_connectedness.volatility import Volatility
 from pandas.testing import assert_frame_equal
 
 class TestVolatilities(unittest.TestCase):
@@ -31,10 +31,10 @@ class TestVolatilities(unittest.TestCase):
             'AUDCAD=X': df_audcad,
             'AUDCHF=X': df_audchf
         }
-        print(self.timeseries_data)
 
     def test_calculate_volatility(self):
-        result = price_data_to_volatility(self.timeseries_data)
+        calculator = Volatility(n=2)
+        result = calculator.price_data_to_volatility(self.timeseries_data)
 
         data = {
             'time': [
