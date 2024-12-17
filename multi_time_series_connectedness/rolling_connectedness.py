@@ -50,7 +50,7 @@ class RollingConnectedness:
                 [restructured_connectedness_timeseries, restructured_connectedness], 
                 ignore_index=False
             )
-        restructured_connectedness_timeseries['forecast_at'] = restructured_connectedness_timeseries.index.to_series().shift(-conn.forecast_period)
+        restructured_connectedness_timeseries['forecast_at'] = restructured_connectedness_timeseries["end_at"].shift(-conn.forecast_period)
         self.rolling_connectedness = restructured_connectedness_timeseries
 
     def store(self, store_result_at):

@@ -19,7 +19,7 @@ class TestRollingConnectedness(unittest.TestCase):
         roll_conn = RollingConnectedness(
             mock_volatilities_data,
             1,
-            29,
+            28,
         )
         roll_conn.data = get_volatilities_data().dropna()
         roll_conn.calculate()
@@ -45,18 +45,17 @@ class TestRollingConnectedness(unittest.TestCase):
             "start_at",
             "end_at",
             "forecast_period",
+            "forecast_at"
         ]
         expected_values = [
-          0.507183, 0.45722, 0.068288, 0.525509, 0.453369, 0.511491, 0.053709, 0.507078, 
-          0.039447, 0.031289, 0.878003, 0.070736, 0.492817, 0.488509, 0.121997, 0.367774, 
-          1729210980, 1729212660, 1
+            [0.509513, 0.456351, 0.066045, 0.522396, 0.452378, 0.513988, 0.050956, 0.503334, 0.038110, 0.029661, 0.882999, 0.067771, 0.490487, 0.486012, 0.117001, 0.364500, 1729210980, 1729212600, 1, 1729212660],
+            [0.501581, 0.458034, 0.072198, 0.530232, 0.456396, 0.503381, 0.066054, 0.522450, 0.042023, 0.038585, 0.861748, 0.080608, 0.498419, 0.496619, 0.138252, 0.377763, 1729211040, 1729212660, 1, None]
         ]
 
         result = roll_conn.rolling_connectedness
-        result = result.drop(columns=['forecast_at'])
 
         assert result.columns.tolist() == expected_column_names
-        assert [round(value, 6) for value in result.iloc[0].tolist()] == expected_values
+        assert [round(value, 6) for value in result.iloc[0].tolist()] == expected_values[0]
 
     def test_with_callback(self):
         mock_volatilities_data = get_volatilities_data()

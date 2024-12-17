@@ -42,8 +42,6 @@ class Volatility:
         return pd.concat([data['time'], result_df], axis=1)
 
     def price_data_to_volatility(self, datasets):
-        print("vxzzvcx")
-        print(datasets)
         volatilities = None
         for key, value in datasets.items():
             volatility = self.yang_zhang_volatility(value, key)
